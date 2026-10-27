@@ -4,12 +4,14 @@ extends SceneTree
 ## --script res://tools/capture_frontend.gd -- --page=home --output=/tmp/home.png
 ## Pages: title, home, tree, warrior, mage, scout, archer, cleric, artisan, weapons.
 ## Optional --size=844,390 exercises real viewport scaling on a landscape window.
-## --exercise-input tests mouse, touch and Escape navigation before capturing.
+## --exercise-input tests mouse, touch, gender previews and Escape navigation.
+## --female renders the female home character / first-job previews.
 
 var page := "title"
 var output := "/tmp/frontend.png"
 var window_size := Vector2i(1280, 720)
 var exercise_input := false
+var female := false
 var argument_error := ""
 
 func _initialize() -> void:
@@ -24,6 +26,8 @@ func _initialize() -> void:
 				argument_error = "--size requires two positive integers, e.g. 844,390"
 			else:
 				window_size = Vector2i(int(parts[0]), int(parts[1]))
+		elif argument == "--female":
+			female = true
 		elif argument == "--exercise-input":
 			exercise_input = true
 	_capture.call_deferred()
@@ -38,17 +42,18 @@ func _click(button: Control) -> void:
 	down.button_index = MOUSE_BUTTON_LEFT
 	down.pressed = true
 	down.position = point
-	root.push_input(down)
+	root.push_input(down, true)
 	await process_frame
 	var up := InputEventMouseButton.new()
 	up.button_index = MOUSE_BUTTON_LEFT
 	up.pressed = false
 	up.position = point
-	root.push_input(up)
+	root.push_input(up, true)
 	await _frames()
 
 func _touch(button: Control) -> void:
-	var point := button.get_global_rect().get_center()
+	# parse_input_event expects physical window coordinates, including letterboxing.
+	var point := root.get_final_transform() * button.get_global_rect().get_center()
 	var down := InputEventScreenTouch.new()
 	down.index = 0
 	down.pressed = true
@@ -123,13 +128,13 @@ func _capture() -> void:
 		down.button_index = MOUSE_BUTTON_LEFT
 		down.pressed = true
 		down.position = point
-		root.push_input(down)
+		root.push_input(down, true)
 		await process_frame
 		var up := InputEventMouseButton.new()
 		up.button_index = MOUSE_BUTTON_LEFT
 		up.pressed = false
 		up.position = point
-		root.push_input(up)
+		root.push_input(up, true)
 		await _frames()
 		if frontend._popup.visible:
 			push_error("Mouse click did not close details")
@@ -139,13 +144,25 @@ func _capture() -> void:
 		var escape := InputEventKey.new()
 		escape.keycode = KEY_ESCAPE
 		escape.pressed = true
-		root.push_input(escape)
+		root.push_input(escape, true)
 		await _frames()
 		if frontend._popup.visible:
 			push_error("Escape did not close details")
 			quit(1)
 			return
-		print("FRONTEND_REAL_INPUT_OK mouse_start touch_tree touch_mage mouse_close escape_close")
+		await _touch(frontend.find_child("TreeFemaleButton", true, false))
+		if not frontend.tree_preview_female:
+			push_error("Touch did not switch female previews")
+			quit(1)
+			return
+		await _touch(frontend.find_child("TreeMaleButton", true, false))
+		if frontend.tree_preview_female:
+			push_error("Touch did not switch male previews")
+			quit(1)
+			return
+		print("FRONTEND_REAL_INPUT_OK mouse_start touch_tree touch_mage mouse_close escape_close touch_gender")
+	frontend.profile["female"] = female
+	frontend.tree_preview_female = female
 	if page == "title":
 		frontend.show_title()
 	elif page == "home":

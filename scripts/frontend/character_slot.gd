@@ -12,7 +12,7 @@ func _ready() -> void:
 	resized.connect(queue_redraw)
 
 
-func display_scene(scene: PackedScene) -> void:
+func display_scene(scene: PackedScene, show_weapon: bool = true) -> void:
 	for child in get_children():
 		remove_child(child)
 		child.queue_free()
@@ -35,6 +35,8 @@ func display_scene(scene: PackedScene) -> void:
 		var character := scene.instantiate()
 		if character is Node3D:
 			stage.add_child(character)
+			if character.has_method("set_weapon_visible"):
+				character.set_weapon_visible(show_weapon)
 		else:
 			character.free()
 			_placeholder = true
@@ -47,7 +49,7 @@ func display_scene(scene: PackedScene) -> void:
 		camera.look_at(Vector3(0, 1.0, 0))
 		var light := DirectionalLight3D.new()
 		light.rotation_degrees = Vector3(-30, -30, 0)
-		light.light_energy = 1.8
+		light.light_energy = 1.15
 		stage.add_child(light)
 		var environment := WorldEnvironment.new()
 		environment.environment = Environment.new()

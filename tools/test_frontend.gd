@@ -5,6 +5,7 @@ extends SceneTree
 const Data = preload("res://scripts/frontend/home_data.gd")
 const Frontend = preload("res://scenes/frontend/start_home.tscn")
 const CharacterSlot = preload("res://scripts/frontend/character_slot.gd")
+const CharacterCatalog = preload("res://scripts/frontend/characters/character_catalog.gd")
 var _passed := 0
 var _failed := 0
 var _ui: Control
@@ -93,12 +94,139 @@ func _run() -> void:
 	_check(_has_label("所持金  12,345"), "inventory shows wallet")
 	_press("CloseDetailButton")
 	await _frames()
+	await _check_integrated_characters()
 	await _check_character_slots()
 	_check(_ui.find_children("*", "CharacterBody3D", true, false).is_empty(), "frontend remains independent of gameplay player")
 	_ui.queue_free()
 	await _frames()
 	print("FRONTEND_TEST_RESULT ", JSON.stringify({"passed": _passed, "failed": _failed}))
 	quit(1 if _failed > 0 else 0)
+
+
+func _check_integrated_characters() -> void:
+	var original_profile: Dictionary = _ui.profile.duplicate(true)
+	var source_hash := FileAccess.get_sha256("res://character_playground/scripts/voxel_character.gd")
+	_check(not source_hash.is_empty() and source_hash == FileAccess.get_sha256("res://scripts/frontend/characters/voxel_character.gd"), "integrated model preserves completed source")
+	_ui.set_profile(Data.sample_profile())
+	_ui.show_home()
+	await _frames()
+	var home_slot: Control = _ui.find_child("PlayerCharacterSlot", true, false)
+	var home_model := _model_in_slot(home_slot)
+	_check(home_model != null and home_model.get("job_id") == "warrior" and not home_model.get("female"), "default home loads male warrior")
+	_check(not home_slot.get("_placeholder") and not _has_label("キャラクター準備中"), "completed character replaces home placeholder")
+	if home_model != null:
+		var weapon: Node3D = home_model.find_child("EquippedWeapon", true, false)
+		_check(weapon != null and not weapon.visible, "unarmed home hides model weapon")
+		_check((home_model.global_basis * Vector3.FORWARD).dot(Vector3.BACK) > 0.95, "home character faces presentation camera")
+		var before: float = home_model.get("_clock")
+		await _frames()
+		_check(float(home_model.get("_clock")) > before, "home character idle animation advances")
+
+	# Instantiate every shipped scene, not only the catalog's default male variant.
+	for job in Data.jobs():
+		for female in [false, true]:
+			var scene := CharacterCatalog.scene_for(job["id"], female)
+			var preview := scene.instantiate()
+			root.add_child(preview)
+			await _frames()
+			var model: Node3D = preview.get("model")
+			var description := "%s %s" % [job["id"], "female" if female else "male"]
+			_check(model != null and model.get("job_id") == job["id"] and model.get("female") == female, "catalog identity " + description)
+			if model != null:
+				_check(not model.find_children("*", "MeshInstance3D", true, false).is_empty(), "catalog has real geometry " + description)
+				var weapon: Node3D = model.find_child("EquippedWeapon", true, false)
+				_check(weapon != null and weapon.visible, "class showcase includes weapon " + description)
+			_check(preview.find_children("*", "CharacterBody3D", true, false).is_empty(), "preview excludes gameplay controller " + description)
+			preview.queue_free()
+			await _frames()
+
+	_ui.tree_preview_female = false
+	_ui.show_tree()
+	await _frames()
+	_check_tree_models(false)
+	_press("TreeFemaleButton")
+	await _frames()
+	_check_tree_models(true)
+	_check_page_buttons_fit("female tree")
+	_check(not bool(_ui.profile.get("female", false)) and _ui.profile["job_id"] == "warrior", "tree gender preview leaves home identity unchanged")
+	_press("TreeMaleButton")
+	await _frames()
+	_check_tree_models(false)
+
+	# The displayed home identity comes from player data, not the last tree preview.
+	_ui.set_profile({"job_id": "mage", "female": true, "skills": {"flame_burst": 3}})
+	_ui.show_home()
+	await _frames()
+	home_model = _model_in_slot(_ui.find_child("PlayerCharacterSlot", true, false))
+	_check(home_model != null and home_model.get("job_id") == "mage" and home_model.get("female"), "player snapshot selects female mage in home")
+	_check(_has_label("メイジ  ·  女性"), "home caption follows player identity")
+	if home_model != null:
+		var weapon: Node3D = home_model.find_child("EquippedWeapon", true, false)
+		_check(weapon != null and not weapon.visible, "female home remains unarmed without inventory equipment")
+	_ui.set_profile({"job_id": "mage", "female": true, "owned_weapons": [{"name": "検証用の杖", "type": "魔法杖", "equipped": true}]})
+	await _frames()
+	home_model = _model_in_slot(_ui.find_child("PlayerCharacterSlot", true, false))
+	if home_model != null:
+		var weapon: Node3D = home_model.find_child("EquippedWeapon", true, false)
+		_check(weapon != null and weapon.visible, "equipped home shows model weapon")
+	_check(_has_label("検証用の杖"), "equipped weapon label matches visible model")
+
+	# Existing generic overrides and the new gender-specific overrides both work.
+	var generic := Node3D.new()
+	generic.name = "GenericJobOverride"
+	var generic_scene := PackedScene.new()
+	_check(generic_scene.pack(generic) == OK, "generic override packs")
+	generic.free()
+	var specific := Node3D.new()
+	specific.name = "FemaleJobOverride"
+	var specific_scene := PackedScene.new()
+	_check(specific_scene.pack(specific) == OK, "female override packs")
+	specific.free()
+	_ui.first_job_scenes["mage"] = generic_scene
+	_ui.tree_preview_female = true
+	_ui.show_tree()
+	await _frames()
+	var mage_slot := _ui.find_child("JobCharacter_mage", true, false)
+	_check(mage_slot.find_child("GenericJobOverride", true, false) != null, "legacy job override replaces built-in model")
+	_check(_model_in_slot(_ui.find_child("JobCharacter_warrior", true, false)) != null, "overriding one class retains other built-in models")
+	_ui.first_job_scenes["mage_female"] = specific_scene
+	_ui.show_tree()
+	await _frames()
+	mage_slot = _ui.find_child("JobCharacter_mage", true, false)
+	_check(mage_slot.find_child("FemaleJobOverride", true, false) != null, "gender-specific override takes priority")
+	_press("TreeMaleButton")
+	await _frames()
+	mage_slot = _ui.find_child("JobCharacter_mage", true, false)
+	_check(mage_slot.find_child("GenericJobOverride", true, false) != null, "male card retains generic override")
+	_check(bool(_ui.profile.get("female", false)) and _ui.profile["job_id"] == "mage", "tree overrides leave female home identity unchanged")
+	_ui.first_job_scenes.clear()
+	_ui.set_profile(original_profile)
+	_ui.show_home()
+	await _frames()
+
+
+func _model_in_slot(slot: Node) -> Node3D:
+	if slot == null:
+		return null
+	return slot.find_child("CharacterModel", true, false) as Node3D
+
+
+func _check_tree_models(female: bool) -> void:
+	var worlds: Array[World3D] = []
+	for job in Data.jobs():
+		var slot := _ui.find_child("JobCharacter_" + str(job["id"]), true, false)
+		var model := _model_in_slot(slot)
+		var description := "%s %s" % [job["id"], "female" if female else "male"]
+		_check(model != null and model.get("job_id") == job["id"] and model.get("female") == female, "tree model identity " + description)
+		if slot == null:
+			continue
+		var viewports := slot.find_children("*", "SubViewport", true, false)
+		_check(viewports.size() == 1, "tree model has viewport " + description)
+		if viewports.size() == 1:
+			var world: World3D = viewports[0].find_world_3d()
+			_check(not worlds.has(world), "tree model world isolated " + description)
+			worlds.append(world)
+	_check(worlds.size() == 6, "six independent character worlds")
 
 
 func _check_character_slots() -> void:

@@ -4,6 +4,7 @@ extends Control
 
 const Data = preload("res://scripts/frontend/home_data.gd")
 const CharacterSlot = preload("res://scripts/frontend/character_slot.gd")
+const CharacterCatalog = preload("res://scripts/frontend/characters/character_catalog.gd")
 const StatRadar = preload("res://scripts/frontend/stat_radar.gd")
 const GOLD := Color("d4ba80")
 const PAPER := Color("ece8dc")
@@ -17,6 +18,7 @@ const INK := Color("101e26")
 var profile: Dictionary = Data.sample_profile()
 var is_demo := true
 var current_page := "title"
+var tree_preview_female := false
 var _page: Control
 var _content: VBoxContainer
 var _popup: PopupPanel
@@ -160,9 +162,9 @@ func show_home() -> void:
 	slot.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	slot.custom_minimum_size = Vector2(180, 150)
 	character_column.add_child(slot)
-	slot.display_scene(character_scene)
-	if character_scene == null:
-		_label(character_column, "キャラクター準備中", 15, MUTED, true)
+	var home_scene := character_scene if character_scene != null else CharacterCatalog.scene_for(str(job["id"]), bool(profile.get("female", false)))
+	slot.display_scene(home_scene, not _equipped_weapon().is_empty())
+	_label(character_column, "%s  ·  %s" % [job["name"], "女性" if bool(profile.get("female", false)) else "男性"], 15, MUTED, true)
 	var skill_card := _panel(character_column, 12, Color("20333a"))
 	var selected_skill := _row(skill_card)
 	_label(selected_skill, "職業スキル", 12, MUTED).size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -222,7 +224,13 @@ func show_tree() -> void:
 	titles.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_label(titles, "スキルツリー", 29)
 	_label(titles, "第一職業をタップして、スキルと転職先を確認", 15, MUTED)
-	_label(heading, "FIRST CLASS   /   6 CLASSES", 13, GOLD)
+	_label(heading, "外見プレビュー", 13, MUTED)
+	for female in [false, true]:
+		var gender := _button(heading, "女性" if female else "男性", _set_tree_gender.bind(female), "TreeFemaleButton" if female else "TreeMaleButton")
+		gender.custom_minimum_size.x = 86
+		if female == tree_preview_female:
+			gender.add_theme_color_override("font_color", GOLD)
+			gender.add_theme_stylebox_override("normal", _style(Color("2b3b3e"), GOLD, 7, 12))
 	var scroll := ScrollContainer.new()
 	scroll.name = "TreeScroll"
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -255,7 +263,8 @@ func show_tree() -> void:
 		slot.custom_minimum_size.x = 106
 		slot.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		row.add_child(slot)
-		slot.display_scene(first_job_scenes.get(job["id"]))
+		slot.name = "JobCharacter_" + str(job["id"])
+		slot.display_scene(_job_scene(str(job["id"])))
 		var info := _column(row, 7)
 		info.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		info.custom_minimum_size.x = 185
@@ -264,13 +273,25 @@ func show_tree() -> void:
 		_label(info, job["name"], 26)
 		_label(info, job["skill"], 15, TEAL)
 		_label(info, "詳細を見る  ›", 13, MUTED)
-		if not first_job_scenes.has(job["id"]):
-			_label(info, "キャラクター準備中", 11, MUTED)
+		_label(info, "女性" if tree_preview_female else "男性", 11, MUTED)
 		_spacer(info)
 		# Containers must not consume the card's mouse/touch events.
 		_ignore_mouse(margin)
 	_build_navigation()
 	print("FRONTEND_PAGE tree")
+
+
+func _set_tree_gender(female: bool) -> void:
+	tree_preview_female = female
+	show_tree()
+	var button := find_child("TreeFemaleButton" if female else "TreeMaleButton", true, false)
+	if button is Button:
+		button.grab_focus()
+
+
+func _job_scene(job_id: String) -> PackedScene:
+	var variant := job_id + ("_female" if tree_preview_female else "_male")
+	return first_job_scenes.get(variant, first_job_scenes.get(job_id, CharacterCatalog.scene_for(job_id, tree_preview_female)))
 
 
 func show_job_detail(job: Dictionary) -> void:

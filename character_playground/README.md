@@ -8,7 +8,7 @@
 
 ## 開き方
 
-Godotのプロジェクト一覧から、このフォルダー内の **`character_playground/project.godot`** をインポートし、F5で実行してください。職業と男女を選び「練習をはじめる」でプレイします。親フォルダーの `project.godot` は引き続き王都の見学用です。
+Godotのプロジェクト一覧から、このフォルダー内の **`character_playground/project.godot`** をインポートし、F5で実行してください。職業と男女を選び「練習をはじめる」でプレイします。親フォルダーの `project.godot` はスタート・ホーム画面から起動します。完成モデルはホームとスキルツリーにも統合されています。王都を見学する場合は親の `scenes/main.tscn` をF6で実行してください。
 
 ```sh
 godot --path character_playground --editor

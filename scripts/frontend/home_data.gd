@@ -75,6 +75,7 @@ static func sample_profile() -> Dictionary:
 		"username": "冒険者",
 		"level": 1,
 		"job_id": "warrior",
+		"female": false,
 		"exp": 0,
 		"gold": 0,
 		"fame": "なし",

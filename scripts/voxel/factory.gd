@@ -81,6 +81,19 @@ func _build_town(world: Node3D) -> void:
 	var town = load("res://scripts/voxel/town.gd").new()
 	var volume = Volume.new()
 	var info: Dictionary = town.build(volume)
+	# District floors form one nonoverlapping surface at the city base height.
+	# Keep the simple stone fallback only for earlier construction stages.
+	var ground: Node3D=world.get_node("LevelKingdomGround")
+	var fallback:=ground.get_node_or_null("ContinuousCityPaving")
+	if fallback!=null:
+		ground.remove_child(fallback)
+		fallback.free()
+	var surfaces: Node3D=load("res://scripts/voxel/district_surfaces.gd").new().build(info,world.palace_data)
+	world.add_child(surfaces)
+	world.stats["district_surfaces"]=surfaces.get_meta("surface_stats",{})
+	world.stats["terrain"]["city_paving"]="district_materials"
+	world.stats["terrain"]["land_triangles"]=12
+	world.stats["terrain"]["land_chunks"]=1
 	var node: Node3D = Mesher.new().build_meshes(volume)
 	# Keep city assets independent and small; chunk-local transforms stay intact.
 	var districts: Dictionary={}

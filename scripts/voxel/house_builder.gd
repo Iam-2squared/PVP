@@ -5,6 +5,8 @@ extends RefCounted
 ## Geometry uses the 0.5m volume; near-only decoration uses DetailBuilder.
 ## Enterable homes require at least 6m width. The city terrain supplies their
 ## ground floor; include_ground_floor is only for isolated component previews.
+## Optional district_style chooses a restrained palette when colors are omitted.
+## Optional weathering 0..2 adds sparse repairs without changing any route.
 
 var _v: Variant
 var _details: Variant
@@ -20,6 +22,9 @@ var _seed := 0
 var _kind := "house"
 var _enterable := false
 var _detail_level := 1
+var _weathering := 0
+var _district_style := ""
+var _weather_detail_boxes := 0
 
 func build(volume: Variant, details: Variant, spec: Dictionary) -> Dictionary:
 	_v = volume
@@ -37,10 +42,14 @@ func build(volume: Variant, details: Variant, spec: Dictionary) -> Dictionary:
 	_kind = str(spec.get("kind", "house"))
 	_enterable = bool(spec.get("enterable", spec.get("interior", false)))
 	_detail_level = clampi(int(spec.get("detail_level", 1)), 0, 2)
+	_weathering = clampi(int(spec.get("weathering", 0)), 0, 2)
+	_district_style = str(spec.get("district_style", ""))
+	_weather_detail_boxes = 0
 	if _enterable:
 		_width = maxf(_width, 6.0)
-	var plaster := int(spec.get("plaster_id", 20))
-	var roof_id := int(spec.get("roof_id", 24))
+	var palette := _district_palette()
+	var plaster := int(spec.get("plaster_id", palette[0]))
+	var roof_id := int(spec.get("roof_id", palette[1]))
 	var height := float(_storeys) * 3.0
 	var overhang := 0.5 if _storeys > 1 else 0.0
 	# Avoid a coplanar floor on top of the city's common paving.
@@ -76,13 +85,17 @@ func build(volume: Variant, details: Variant, spec: Dictionary) -> Dictionary:
 		_bay_window(3.0, -_depth * 0.5 - overhang)
 	if _enterable:
 		_interior()
+	if _weathering > 0:
+		_weather_house(height, overhang, plaster, roof_id)
 	var half := Vector3(_width * 0.5 + 0.5, height + 4.5, _depth * 0.5 + 1.0)
 	var bounds := _world_bounds(Vector3(0, (height + 4.5) * 0.5, -0.25), Vector3(half.x * 2.0, half.y, half.z * 2.0))
 	return {
 		"id": str(spec.get("id", "house_%d" % _seed)), "kind": _kind,
 		"bounds": bounds, "centre": _origin, "width": _width, "depth": _depth,
 		"storeys": _storeys, "orientation": _orientation, "roof_id": roof_id,
-		"detail_level": _detail_level,
+		"detail_level": _detail_level, "plaster_id": plaster, "seed": _seed,
+		"district": str(spec.get("district", "")), "district_style": _district_style,
+		"weathering": _weathering, "weather_detail_boxes": _weather_detail_boxes,
 		"entrance": _world(Vector3(0, 0.15, -_depth * 0.5 - 1.0)),
 		"entry": _world(Vector3(0, 0.15, -_depth * 0.5 - 1.0)),
 		"interior_point": _world(Vector3(0, 0.15, -_depth * 0.25)),
@@ -217,6 +230,56 @@ func _roof(height: float, roof_id: int, overhang: float) -> void:
 		_window(Vector3(x + side * 0.75, height + 0.75, z), -PI * 0.5 * side, false)
 		for row in range(2):
 			_box(Vector3(x, height + 1.5 + float(row) * 0.5, z), Vector3(1.5 - float(row) * 0.5, 0.5, 2.0 - float(row) * 0.5), roof_id)
+
+func _district_palette() -> Array[int]:
+	# Adjacent homes vary within the same faded stone, clay and timber family.
+	# Explicit plaster_id/roof_id remain authoritative for existing callers.
+	match _district_style:
+		"poor":
+			return [[16, 12, 31][posmod(_seed, 3)], [24, 25, 13][posmod(_seed / 3, 3)]]
+		"workers":
+			return [[12, 11, 31][posmod(_seed, 3)], [24, 25][posmod(_seed / 3, 2)]]
+		"merchant":
+			return [[20, 11, 25][posmod(_seed, 3)], [24, 24, 7][posmod(_seed / 3, 3)]]
+		"civic":
+			return [[20, 5, 31][posmod(_seed, 3)], 7]
+	return [20, 24]
+
+func _weather_house(height: float, overhang: float, plaster: int, roof_id: int) -> void:
+	var front := -_depth * 0.5
+	var side := -1.0 if posmod(_seed, 2) == 0 else 1.0
+	# These shallow stains touch the stone plinth at its edges. The central
+	# doorway and the entire 2m approach remain clear, even on a 4m frontage.
+	if posmod(_seed, 3) != 2 and (_weathering == 2 or posmod(_seed, 3) == 0):
+		for edge in [-1.0, 1.0]:
+			_wear_detail(Vector3(edge * (_width * 0.5 - 0.4375), 0.1875, front - 0.0625), Vector3(0.625, 0.375, 0.125), 13)
+	# A single broad faded patch sits below an upstairs window, between the
+	# timber bands. It does not flatten windows or cover their shutters.
+	if _storeys > 1 and posmod(_seed, 2 if _weathering == 2 else 5) == 0:
+		var faded := 16 if plaster != 16 else 12
+		_wear_detail(Vector3(side * _width * 0.25, 3.4375, front - overhang - 0.0625), Vector3(0.875, 0.375, 0.125), faded)
+	if _weathering < 2:
+		return
+	if posmod(_seed, 4) == 0:
+		# One damp corner, never a green stripe around every foundation.
+		_wear_detail(Vector3(side * (_width * 0.5 - 0.25), 0.125, front - 0.125), Vector3(0.375, 0.25, 0.125), 18)
+	if _storeys > 1 and posmod(_seed, 5) == 0:
+		var shutter_x := side * (_width * 0.25 - 0.8125)
+		for y in [4.5, 5.0]:
+			_wear_detail(Vector3(shutter_x, y, front - overhang - 0.25), Vector3(0.5, 0.125, 0.125), 19)
+	if posmod(_seed, 3) == 0:
+		# Replace actual 0.5m tile courses rather than floating a flat roof decal.
+		# This opposite slope is clear of the chimney and leaves the ridge intact.
+		var roof_side := 1.0 if posmod(_seed, 2) == 0 else -1.0
+		var patch_id := (13 if roof_id == 7 else 24) if roof_id != 24 else 25
+		var course_count := ceili(_width * 0.5 / 0.5)
+		for course in range(1, mini(3, course_count)):
+			var x := roof_side * (_width * 0.5 - float(course) * 0.5 - 0.25)
+			_box(Vector3(x, height + float(course) * 0.5 + 0.25, _depth * 0.25), Vector3(0.5, 0.5, 1.5), patch_id)
+
+func _wear_detail(c: Vector3, size: Vector3, id: int) -> void:
+	_detail(c, size, id)
+	_weather_detail_boxes += 1
 
 func _world(local: Vector3) -> Vector3:
 	return _origin + _basis * local

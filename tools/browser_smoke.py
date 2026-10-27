@@ -151,7 +151,11 @@ async def check_profile(browser, args, name, width, height, mobile):
             await page.wait_for_timeout(args.move_ms)
             await touch(cdp, "touchEnd", [])
         else:
-            await canvas.click(position={"x": canvas_rect["width"] * 0.5, "y": canvas_rect["height"] * 0.4})
+            # The canvas was already checked visible and correctly sized above.
+            # Direct native input avoids Locator.click's extra hit-target/RAF
+            # checks starving behind a slow software WebGL renderer.
+            await page.mouse.click(canvas_rect["x"] + canvas_rect["width"] * 0.5,
+                                   canvas_rect["y"] + canvas_rect["height"] * 0.4)
             await page.keyboard.down("w")
             await page.wait_for_timeout(args.move_ms)
             await page.keyboard.up("w")

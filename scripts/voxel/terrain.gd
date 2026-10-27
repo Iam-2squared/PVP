@@ -1,6 +1,6 @@
 extends RefCounted
-## A level construction site. City paving is one continuous material;
-## gardens and parks are added by the town builder above this base.
+## Flat cleared ground and a collision base shared by all construction stages.
+## Town replaces ContinuousCityPaving with district_surfaces.gd at the same level.
 
 const EXTENT := 320
 const GROUND_Y := 2.0
@@ -28,7 +28,7 @@ func build() -> Node3D:
 	body.add_child(collision)
 	result.add_child(body)
 	_city_paving(result)
-	var statistics:={"land_triangles":20,"land_chunks":2,"water_triangles":0,"max_height":GROUND_Y,"min_height":GROUND_Y,"city_paving":"continuous_stone","exterior":"cleared_level_ground","horizontal_grid":0.5,"height_step":0.5}
+	var statistics:={"land_triangles":20,"land_chunks":2,"water_triangles":0,"max_height":GROUND_Y,"min_height":GROUND_Y,"city_paving":"stage_fallback_replaced_by_town_districts","exterior":"cleared_level_ground","horizontal_grid":0.5,"height_step":0.5}
 	result.set_meta("terrain_stats",statistics)
 	print("VOXEL_TERRAIN ",JSON.stringify(statistics))
 	return result

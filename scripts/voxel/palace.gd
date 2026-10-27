@@ -1,6 +1,8 @@
 extends RefCounted
 ## Tall stone-base / white-core / slender-spire palace with walkable interiors.
 const Volume=preload("res://scripts/voxel/volume.gd")
+const Terraces=preload("res://scripts/voxel/palace_terraces.gd")
+const PALACE_RISE:=12.0
 const LEVELS: Array[float]=[3.0,9.0,15.0,21.0,27.0,33.0]
 const STONE:=4
 const LIGHT:=5
@@ -28,6 +30,7 @@ var _furnishings: Array[Dictionary]=[]
 
 func build(volume: Variant,interior_volumes: Array=[]) -> Dictionary:
 	_v=volume
+	var interior_start:=interior_volumes.size()
 	_floors.clear()
 	_rooms.clear()
 	_doors.clear()
@@ -54,7 +57,7 @@ func build(volume: Variant,interior_volumes: Array=[]) -> Dictionary:
 	_disjoint_components()
 	var count:=0
 	for inside in _floors: count+=inside.cells.size()
-	return {"bounds":AABB(Vector3(-43,2,-135),Vector3(86,93,74)),"entry":Vector3(0,3.15,-68),"floor_levels":LEVELS,"upper_tower_levels":[27.0,33.0],"highest_point":94.0,"rooms":_rooms,"doors":_doors,"stairs":_stairs,"route_waypoints":_routes,"landmarks":_landmarks,"lights":_lights,"furnishings":_furnishings,"interior_voxels":count,"room_count":_rooms.size(),"viewpoints":[
+	var info: Dictionary={"bounds":AABB(Vector3(-43,2,-135),Vector3(86,93,74)),"entry":Vector3(0,3.15,-68),"floor_levels":LEVELS,"upper_tower_levels":[27.0,33.0],"highest_point":94.0,"rooms":_rooms,"doors":_doors,"stairs":_stairs,"route_waypoints":_routes,"landmarks":_landmarks,"lights":_lights,"furnishings":_furnishings,"interior_voxels":count,"room_count":_rooms.size(),"viewpoints":[
 		{"id":"palace_front","title":"王城・尖塔の全景","position":Vector3(0,2.15,-8),"yaw_degrees":0.0,"pitch_degrees":24.0},
 		{"id":"palace_court","title":"王城・尖頭門","position":Vector3(0,2.15,-51),"yaw_degrees":0.0,"pitch_degrees":15.0},
 		{"id":"palace_hall","title":"王城・大広間","position":Vector3(8,3.15,-87),"yaw_degrees":0.0,"pitch_degrees":10.0},
@@ -62,6 +65,60 @@ func build(volume: Variant,interior_volumes: Array=[]) -> Dictionary:
 		{"id":"palace_library","title":"王城・図書室","position":Vector3(28,9.15,-105),"yaw_degrees":0.0,"pitch_degrees":4.0},
 		{"id":"palace_bedroom","title":"王城・王の私室","position":Vector3(-12,15.15,-125),"yaw_degrees":-90.0,"pitch_degrees":0.0},
 		{"id":"palace_observatory","title":"王城・展望バルコニー","position":Vector3(0,33.15,-79),"yaw_degrees":180.0,"pitch_degrees":-4.0}],"research_features":["Tokyo Cinderella Castle: low polygonal stone base, tiered white core and slender white-gold highest spire","Neuschwanstein: ceremonial arcade","Chambord: independent stairs","Himeji: timber frames","Nintendo/Team-Kyo: furnished voxel interiors"]}
+	# Translate the completed castle once: shells, disjoint interior volumes,
+	# furnishings and every coordinate-bearing record keep the same relationship.
+	_shift_volume(_v)
+	for inside in _floors: _shift_volume(inside)
+	for i in range(interior_start,interior_volumes.size()):
+		var part: Dictionary=interior_volumes[i]
+		part["level"]=float(part["level"])+PALACE_RISE
+		part["title"]="王城 %dm階"%int(part["level"])
+		part["bounds"]=AABB(part["bounds"].position+Vector3.UP*PALACE_RISE,part["bounds"].size)
+	info=_elevated_metadata(info)
+	# The city viewpoint remains on its original terrain. The former court is
+	# the upper terrace landing, safely in front of the castle's retained steps.
+	for view in info["viewpoints"]:
+		if view["id"]=="palace_front": view["position"]=Vector3(0,2.15,-8)
+		if view["id"]=="palace_court": view["position"]=Vector3(0,14.15,-61.5)
+	for room in info["rooms"]:
+		if room["id"]=="forecourt":
+			room["position"]=Vector3(0,14.15,-61.5)
+			room["level"]=14.0
+			room["bounds"]=AABB(Vector3(-15,14,-64),Vector3(30,8,14))
+	for landmark in info["landmarks"]:
+		if landmark["id"]=="palace_forecourt": landmark["position"]=Vector3(0,14.15,-61.5)
+	info["lights"][0]["position"]=Vector3(0,17.65,-61.5)
+	var terrace_info: Dictionary=Terraces.new().build(_v)
+	info["castle_bounds"]=info["bounds"]
+	info["bounds"]=info["bounds"].merge(terrace_info["bounds"])
+	info["terraces"]=terrace_info["terraces"]
+	info["stairs"].append_array(terrace_info["stairs"])
+	info["route_waypoints"].append_array(terrace_info["route_waypoints"])
+	info["landmarks"].append_array(terrace_info["landmarks"])
+	info["viewpoints"].append_array(terrace_info["viewpoints"])
+	info["research_features"].append("Three ceremonial stone terraces with recessed arcades and broad balustraded stair flights")
+	return info
+
+func _shift_volume(v: Variant) -> void:
+	var raised: Dictionary={}
+	var offset:=Vector3i(0,roundi(PALACE_RISE*2),0)
+	for cell: Vector3i in v.cells: raised[cell+offset]=v.cells[cell]
+	v.cells=raised
+
+func _elevated_metadata(value: Variant,key: String="") -> Variant:
+	if value is Vector3: return value+Vector3.UP*PALACE_RISE
+	if value is AABB: return AABB(value.position+Vector3.UP*PALACE_RISE,value.size)
+	if value is Dictionary:
+		var raised: Dictionary={}
+		for child_key in value: raised[child_key]=_elevated_metadata(value[child_key],str(child_key))
+		return raised
+	if value is Array:
+		var raised: Array=[]
+		for item in value: raised.append(_elevated_metadata(item,key))
+		return raised
+	if (value is float or value is int) and key in ["level","levels","floor_levels","upper_tower_levels","highest_point"]:
+		return float(value)+PALACE_RISE
+	return value
 
 func _box(v: Variant,a: Vector3,b: Vector3,id: int) -> void:
 	var lo:=Vector3i(roundi(a.x*2),roundi(a.y*2),roundi(a.z*2))

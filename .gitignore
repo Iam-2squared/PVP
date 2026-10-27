@@ -1,0 +1,10 @@
+.godot/
+build/
+dist/
+captures/
+*.tmp
+*.log
+export_credentials.cfg
+.DS_Store
+__pycache__/
+*.pyc

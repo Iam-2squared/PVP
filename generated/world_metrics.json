@@ -1,0 +1,73 @@
+{
+  "build_seconds": 12.537,
+  "bytes": 4468791,
+  "world": {
+    "design": {
+      "city_vertices": "[(-53.0, -128.0), (53.0, -128.0), (128.0, -53.0), (128.0, 53.0), (53.0, 128.0), (-53.0, 128.0), (-128.0, 53.0), (-128.0, -53.0)]",
+      "corner_towers": 8,
+      "gate_towers": 8,
+      "gatehouses": 4,
+      "gates": [
+        {
+          "id": "north_gate",
+          "kind": "gate",
+          "position": "(0.0, 2.0, -128.0)",
+          "title": "北門"
+        },
+        {
+          "id": "east_gate",
+          "kind": "gate",
+          "position": "(128.0, 2.0, 0.0)",
+          "title": "東門"
+        },
+        {
+          "id": "south_gate",
+          "kind": "gate",
+          "position": "(0.0, 2.0, 128.0)",
+          "title": "南門"
+        },
+        {
+          "id": "west_gate",
+          "kind": "gate",
+          "position": "(-128.0, 2.0, 0.0)",
+          "title": "西門"
+        }
+      ],
+      "stairs": {
+        "bottom": "(-123.75, 2.0, 18.0)",
+        "step_depth": 1.0,
+        "step_height": 0.5,
+        "top": "(-123.75, 16.0, 46.0)",
+        "width": 2.5
+      },
+      "voxel_writes": 614594,
+      "wall_columns": 10504,
+      "wall_walk_height": 16.0
+    },
+    "terrain": {
+      "generation_ms": 5070,
+      "height_step": 0.5,
+      "horizontal_grid": 1.0,
+      "land_chunks": 75,
+      "land_triangles": 104648,
+      "max_height": 53.5,
+      "side_triangles": 64968,
+      "top_triangles": 39680,
+      "water_triangles": 2532
+    },
+    "voxel_size_m": 0.5,
+    "walls": {
+      "ao_aware_merge": true,
+      "baked_vertex_ao": true,
+      "build_ms": 6577,
+      "chunks": 44,
+      "exposed_faces_before_merge": 301038,
+      "material_count": 1,
+      "merged_face_ratio": 3.09,
+      "quads": 97477,
+      "triangles": 194954,
+      "voxel_size": 0.5,
+      "voxels": 493158
+    }
+  }
+}

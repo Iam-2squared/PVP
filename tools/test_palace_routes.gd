@@ -41,6 +41,24 @@ func _walk_to(target: Vector3) -> bool:
 	Input.action_release("move_forward")
 	return false
 
+func _walk_route(route: Dictionary, reverse: bool = false) -> bool:
+	var points: Array=Array(route.get("points",[])).duplicate()
+	if points.size()<2: return false
+	if reverse: points.reverse()
+	var direction: String="return" if reverse else "outbound"
+	_player.position=points[0]
+	_player.velocity=Vector3.ZERO
+	for i in range(12): await physics_frame
+	var okay:=true
+	for i in range(1,points.size()):
+		if not await _walk_to(points[i]):
+			_check(false,"Blocked route %s (%s) at segment %d: target %s actual %s"%[route["id"],direction,i,points[i],_player.position])
+			okay=false
+			break
+	if okay: _check(true,"Walked route %s (%s)"%[route["id"],direction])
+	print("PALACE_ROUTE ",route["id"]," ",direction," ","PASS" if okay else "FAIL")
+	return okay
+
 func _run() -> void:
 	var scene=load("res://scenes/main.tscn").instantiate()
 	root.add_child(scene)
@@ -78,19 +96,13 @@ func _run() -> void:
 		_check(_space.intersect_shape(query,1).is_empty(),"Doorway is obstructed: "+str(door["id"])+" at "+str(p))
 	var routes: Array=palace.get("route_waypoints",[])
 	_check(not routes.is_empty(),"Missing palace walking routes")
+	var return_walks:=0
 	for route in routes:
 		var points: Array=Array(route.get("points",[]))
 		if points.size()<2: continue
-		_player.position=points[0]
-		_player.velocity=Vector3.ZERO
-		for i in range(12): await physics_frame
-		var okay:=true
-		for i in range(1,points.size()):
-			if not await _walk_to(points[i]):
-				_check(false,"Blocked route %s at segment %d: target %s actual %s"%[route["id"],i,points[i],_player.position])
-				okay=false
-				break
-		if okay: _check(true,"Walked route "+str(route["id"]))
-		print("PALACE_ROUTE ",route["id"]," ","PASS" if okay else "FAIL")
-	print("PALACE_TEST_RESULT ",JSON.stringify({"checks":checks,"failures":failures}))
+		await _walk_route(route)
+		if str(route.get("id","")).begins_with("terrace_approach_"):
+			if await _walk_route(route,true): return_walks+=1
+	_check(return_walks>=2,"Both side approaches must be walkable back from the castle to city ground")
+	print("PALACE_TEST_RESULT ",JSON.stringify({"checks":checks,"side_return_walks":return_walks,"failures":failures}))
 	quit(0 if failures.is_empty() else 1)

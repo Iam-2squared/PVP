@@ -15,28 +15,28 @@
         "city_width_m": 320.0,
         "palace_rooms": 21,
         "stage": "town",
-        "tour_locations": 15,
-        "town_houses": 517
+        "tour_locations": 18,
+        "town_houses": 428
       },
       "movement_difference": {
-        "mean_rgb_difference": 3.506,
-        "changed_pixel_fraction": 0.0823
+        "mean_rgb_difference": 3.477,
+        "changed_pixel_fraction": 0.0815
       },
       "overview_difference": {
-        "mean_rgb_difference": 66.684,
-        "changed_pixel_fraction": 0.9525
+        "mean_rgb_difference": 67.018,
+        "changed_pixel_fraction": 0.9547
       },
       "return_difference": {
         "mean_rgb_difference": 0,
         "changed_pixel_fraction": 0.0
       },
       "tour_difference": {
-        "mean_rgb_difference": 77.103,
-        "changed_pixel_fraction": 0.9343
+        "mean_rgb_difference": 76.651,
+        "changed_pixel_fraction": 0.9283
       },
       "tour_steps": 2,
       "tour_input": "N key",
-      "rgb_standard_deviation": 150.99,
+      "rgb_standard_deviation": 150.61,
       "fatal_errors": [],
       "console_errors": []
     },
@@ -54,35 +54,30 @@
         "city_width_m": 320.0,
         "palace_rooms": 21,
         "stage": "town",
-        "tour_locations": 15,
-        "town_houses": 517
+        "tour_locations": 18,
+        "town_houses": 428
       },
       "movement_difference": {
-        "mean_rgb_difference": 9.43,
-        "changed_pixel_fraction": 0.22
+        "mean_rgb_difference": 7.026,
+        "changed_pixel_fraction": 0.1708
       },
       "overview_difference": {
-        "mean_rgb_difference": 65.332,
-        "changed_pixel_fraction": 0.9505
+        "mean_rgb_difference": 65.7,
+        "changed_pixel_fraction": 0.9575
       },
       "return_difference": {
         "mean_rgb_difference": 0,
         "changed_pixel_fraction": 0.0
       },
       "tour_difference": {
-        "mean_rgb_difference": 77.141,
-        "changed_pixel_fraction": 0.936
+        "mean_rgb_difference": 76.433,
+        "changed_pixel_fraction": 0.9307
       },
       "tour_steps": 2,
       "tour_input": "native touch",
-      "rgb_standard_deviation": 151.69,
+      "rgb_standard_deviation": 151.63,
       "fatal_errors": [],
       "console_errors": []
     }
-  ],
-  "automation_retry": {
-    "initial_failure": "Locator.click timed out after visible/enabled/stable canvas and scrolling; no game input reached the canvas. The 5000 ms settle-only retry had the same failure.",
-    "fix": "Native page.mouse.click at the already measured visible canvas coordinates; movement/render/console assertions unchanged.",
-    "product_changes": false
-  }
+  ]
 }

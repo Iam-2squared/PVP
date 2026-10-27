@@ -5,7 +5,7 @@ extends RefCounted
 const House = preload("res://scripts/voxel/house_builder.gd")
 const Civic = preload("res://scripts/voxel/civic_buildings.gd")
 const Details = preload("res://scripts/voxel/detail_builder.gd")
-const TARGET_HOUSES := 580
+const TARGET_HOUSES := 520
 const FEET_Y := 2.15
 
 var _v: Variant
@@ -30,6 +30,10 @@ var _block_rows := 0
 var _corner_terraces := 0
 var _roof_area := 0.0
 var _life_stats: Dictionary = {}
+var _garden_stats: Dictionary = {}
+var _sign_stats: Array = []
+var _fountain: Dictionary = {}
+var _tree_count := 0
 
 func build(volume: Variant) -> Dictionary:
 	_v = volume
@@ -53,6 +57,10 @@ func build(volume: Variant) -> Dictionary:
 	_corner_terraces = 0
 	_roof_area = 0.0
 	_life_stats.clear()
+	_garden_stats.clear()
+	_sign_stats.clear()
+	_fountain.clear()
+	_tree_count = 0
 	_street_plan()
 	_reserve_major_areas()
 	_civic_buildings()
@@ -61,7 +69,6 @@ func build(volume: Variant) -> Dictionary:
 	_market()
 	_formal_forecourt()
 	_neighbourhood_parks()
-	_royal_street_frontages()
 	_planned_southern_blocks()
 	_planned_northern_blocks()
 	_perimeter_street_frontages()
@@ -75,11 +82,24 @@ func build(volume: Variant) -> Dictionary:
 		_walk_view("southwest_shambles","商店街の張出し家並み",Vector2(-65,46),Vector3(-104,7,46)),
 		_walk_view("residential_laundry","洗濯物の裏路地",Vector2(65,96),Vector3(93,6,96)),
 	])
+	var signs: Node3D
+	if ResourceLoader.exists("res://scripts/voxel/facility_signs.gd"):
+		signs = load("res://scripts/voxel/facility_signs.gd").new().build(_v,_details,_enterable)
+		_sign_stats = signs.get_meta("facility_signs",[])
+		for capture: Dictionary in signs.get_meta("capture_viewpoints",[]):
+			var p: Vector3 = capture["position"]
+			_viewpoints.append(_walk_view(str(capture["id"]),str(capture["title"]),Vector2(p.x,p.z),capture["target"]))
 	_detail_root = _details.finish()
+	if signs != null: _detail_root.add_child(signs)
 	var stats: Dictionary = _detail_root.get_meta("detail_stats", {}).duplicate()
 	stats["clotheslines"] = _clotheslines
 	stats["bunting_lines"] = _flags
 	stats["street_life"] = _life_stats
+	stats["royal_gardens"] = _garden_stats
+	stats["facility_signs"] = _sign_stats
+	stats["sign_text_triangles"] = signs.get_meta("text_triangles",0) if signs != null else 0
+	# Keep small-box triangles and baked lettering separately measurable.
+	_detail_root.set_meta("detail_stats",stats)
 	var attached := 0
 	var fronts := 0
 	for house in _houses:
@@ -90,9 +110,9 @@ func build(volume: Variant) -> Dictionary:
 		"streets":_streets.duplicate(true), "route_waypoints":_routes.duplicate(true),
 		"landmarks":_landmarks.duplicate(true), "viewpoints":_viewpoints.duplicate(true),
 		"enterable_buildings":_enterable.duplicate(true), "parks":_parks.duplicate(true),
-		"ground_regions":_ground_regions.duplicate(true),
+		"ground_regions":_ground_regions.duplicate(true), "fountain":_fountain.duplicate(true), "facility_signs":_sign_stats.duplicate(true),
 		"dressingstats":stats, "ground_top":2.0, "adds_road_plates":false,
-		"layout_stats":{"terraces":_terraces,"block_rows":_block_rows,"corner_terraces":_corner_terraces,"attached_houses":attached,"featured_frontages":fronts,"roof_footprint_m2":snappedf(_roof_area,0.1),"planning":"courtyard street blocks clipped to the regular octagonal perimeter","rear_alleys_m":2.0},
+		"layout_stats":{"terraces":_terraces,"block_rows":_block_rows,"corner_terraces":_corner_terraces,"attached_houses":attached,"featured_frontages":fronts,"roof_footprint_m2":snappedf(_roof_area,0.1),"planning":"palace gardens and civic squares connected to courtyard street blocks","rear_alleys_m":2.0,"trees":_tree_count+int(_garden_stats.get("trees",0)),"palace_buffer":Rect2(-65,-18,130,28),"fountain_square":Rect2(-22,0,44,36),"guild_square":Rect2(-110,-10,43,24)},
 		"capture_viewpoints":[{"id":"town_overview","position":Vector3(104,125,170),"target":Vector3(0,15,-15)}],
 		"districts":["西の商店街", "南西の古い連棟街", "南東の職人住宅街", "東の公共区", "北の工房街"],
 		"reserved_wall_stair_bases":[Vector2(-88,130),Vector2(-130,-88),Vector2(88,-130),Vector2(130,88)],
@@ -104,15 +124,17 @@ func take_details() -> Node3D:
 	return result
 
 func _street_plan() -> void:
-	_street("south_royal","南門大通り",12,[Vector2(0,153),Vector2(0,35)],"main_avenue")
-	_street("west_royal","西門大通り",10,[Vector2(-153,0),Vector2(0,0)],"main_avenue")
-	_street("east_royal","東門大通り",10,[Vector2(0,0),Vector2(153,0)],"main_avenue")
-	_street("plaza_west_arc","噴水西の回り道",7,[Vector2(0,35),Vector2(-10,28),Vector2(-10,0),Vector2(0,-10)],"main_avenue")
-	_street("plaza_east_arc","噴水東の回り道",7,[Vector2(0,35),Vector2(10,28),Vector2(10,0),Vector2(0,-10)],"main_avenue")
+	_street("south_royal","南門大通り",12,[Vector2(0,153),Vector2(0,38)],"main_avenue")
+	_street("west_royal","西門大通り",10,[Vector2(-153,0),Vector2(-65,0),Vector2(-22,-4),Vector2(0,-4)],"main_avenue")
+	_street("east_royal","東門大通り",10,[Vector2(0,-4),Vector2(22,-4),Vector2(65,0),Vector2(153,0)],"main_avenue")
+	_street("plaza_west_arc","噴水西の回り道",7,[Vector2(0,38),Vector2(-18,32),Vector2(-18,-2),Vector2(0,-10)],"main_avenue")
+	_street("plaza_east_arc","噴水東の回り道",7,[Vector2(0,38),Vector2(18,32),Vector2(18,-2),Vector2(0,-10)],"main_avenue")
+	_street("palace_west_arrival","王城西階段への並木道",4,[Vector2(-18,-8),Vector2(-50,-8),Vector2(-50,-12)],"main_avenue")
+	_street("palace_east_arrival","王城東階段への並木道",4,[Vector2(18,-8),Vector2(50,-8),Vector2(50,-12)],"main_avenue")
 	for z in [26.0,46.0,66.0,86.0,106.0,126.0,146.0]:
 		var limit := minf(143.0,211.0-z)
-		_street("south_cross_%d"%int(z),"南市街の横通り",4.5,[Vector2(-limit,z),Vector2(-8,z)],"old_quarter")
-		_street("east_cross_%d"%int(z),"東市街の横通り",4.5,[Vector2(8,z),Vector2(limit,z)],"poor_quarter")
+		_street("south_cross_%d"%int(z),"南市街の横通り",4.5,[Vector2(-limit,z),Vector2(-23 if z==26 else -8,z)],"old_quarter")
+		_street("east_cross_%d"%int(z),"東市街の横通り",4.5,[Vector2(23 if z==26 else 8,z),Vector2(limit,z)],"poor_quarter")
 	for side in [-1.0,1.0]:
 		for x in [31.0,65.0,99.0,133.0]:
 			var limit := minf(146.0,211.0-x)
@@ -134,7 +156,7 @@ func _street_plan() -> void:
 	_street("north_gate_access","北門の接続路",4,[Vector2(0,-156),Vector2(0,-149)],"patrol")
 	_street("guild_access","ギルドの正面道",4,[Vector2(-91,0),Vector2(-91,-8),Vector2(-91,-11)],"civic")
 	_street("tavern_access","酒場の横路地",3,[Vector2(-109,26),Vector2(-109,17.5),Vector2(-112.5,17.5)],"market")
-	_street("weapon_access","武器店への小道",3,[Vector2(-54,26),Vector2(-54,23)],"market")
+	_street("weapon_access","武器店への小道",3,[Vector2(-118,46),Vector2(-118,42)],"market")
 	_street("forge_access","鍛冶屋への小道",3,[Vector2(-118,46),Vector2(-118,48)],"old_quarter")
 	_street("apothecary_access","薬屋への小道",3,[Vector2(124,-10),Vector2(124,-17)],"northeast")
 	_street("inn_access","宿屋への小道",3,[Vector2(99,56),Vector2(111,56)],"civic")
@@ -152,7 +174,7 @@ func _street(id: String,title: String,width: float,points: Array,district: Strin
 	if id.begins_with("north_long") or id.begins_with("north_cross"):
 		obstacles.assign([Rect2(-117,-105,43,40),Rect2(-105,-31,28,22),Rect2(-112,-49,36,12),Rect2(81,-101,30,43)])
 	elif id.begins_with("rear_"):
-		obstacles.assign([Rect2(-128,6,18,18),Rect2(-59,13,10,10),Rect2(76,6,19,19),Rect2(110,50,14,13),Rect2(-123,48,10,10),Rect2(28,10,35,27)])
+		obstacles.assign([Rect2(-128,6,18,18),Rect2(-123,32,10,10),Rect2(-22,0,44,36),Rect2(109,-54,25,20),Rect2(76,6,19,19),Rect2(110,50,14,13),Rect2(-123,48,39,10),Rect2(28,10,35,27)])
 	elif id=="south_long_-1_99":
 		obstacles.assign([Rect2(-109,15,41,21)])
 	if obstacles.is_empty():
@@ -207,7 +229,7 @@ func _write_street(id: String,title: String,width: float,points: Array,district:
 
 func _reserve_major_areas() -> void:
 	_reserved.append_array([
-		Rect2(-64,-152,128,141),Rect2(-18,-10,36,45),
+		Rect2(-64,-152,128,141),Rect2(-65,-18,130,28),Rect2(-22,0,44,36),Rect2(-110,-10,43,24),
 		Rect2(-116,-104,41,36),Rect2(-113,-50,37,17),
 		Rect2(-108,16,39,20),
 	])
@@ -245,24 +267,28 @@ func _civic_buildings() -> void:
 
 func _featured_shops() -> void:
 	var specs := [
-		{"id":"weapon_shop","title":"武器店","centreXZ":Vector2(-54,18),"width":7,"depth":8,"storeys":3,"orientation":PI,"kind":"weapon_shop","enterable":true,"seed":41,"plaster_id":11,"district":"market"},
+		{"id":"weapon_shop","title":"武器店","centreXZ":Vector2(-118,37),"width":7,"depth":8,"storeys":3,"orientation":PI,"kind":"weapon_shop","enterable":true,"seed":41,"plaster_id":11,"district":"market"},
 		{"id":"blacksmith","title":"鍛冶屋","centreXZ":Vector2(-118,53),"width":8,"depth":8,"storeys":2,"orientation":0.0,"kind":"blacksmith","enterable":true,"seed":42,"plaster_id":25,"district":"old_quarter","weathering":1},
 		{"id":"apothecary","title":"薬屋","centreXZ":Vector2(124,-22),"width":6,"depth":8,"storeys":2,"orientation":PI,"kind":"shop","enterable":true,"seed":43,"plaster_id":31,"roof_id":7,"district":"northeast"},
 		{"id":"inn","title":"東の宿屋","centreXZ":Vector2(117,56),"width":10,"depth":10,"storeys":3,"orientation":PI*0.5,"kind":"inn","enterable":true,"seed":44,"plaster_id":20,"district":"civic"},
 		{"id":"town_hall","title":"市庁舎","centreXZ":Vector2(85,15),"width":16,"depth":14,"storeys":3,"orientation":PI*0.5,"kind":"council","enterable":true,"seed":46,"roof_id":7,"plaster_id":5,"district":"civic"},
 	]
+	specs.append_array([
+		{"id":"armour_workshop","title":"防具工房","centreXZ":Vector2(-107,53),"width":6,"depth":8,"storeys":2,"orientation":0.0,"kind":"workshop","seed":47,"plaster_id":25,"roof_id":25,"district":"old_quarter","weathering":1,"detail_level":1},
+		{"id":"carpenter_workshop","title":"木工工房","centreXZ":Vector2(-91,53),"width":6,"depth":8,"storeys":2,"orientation":0.0,"kind":"workshop","seed":48,"plaster_id":11,"roof_id":25,"district":"old_quarter","weathering":1,"detail_level":0},
+	])
 	for spec in specs:
 		var info := _build_house(spec)
 		var bounds: AABB = info["bounds"]
 		_reserved.append(Rect2(Vector2(bounds.position.x,bounds.position.z),Vector2(bounds.size.x,bounds.size.z)).grow(0.5))
 		_landmarks.append({"id":spec["id"],"title":spec["title"],"kind":spec["kind"],"position":info["entrance"],"bounds":bounds})
-		_routes.append({"id":spec["id"]+"_interior","title":spec["title"],"width":2.0,"points":PackedVector3Array(info["route_waypoints"])})
+		if info["enterable"]: _routes.append({"id":spec["id"]+"_interior","title":spec["title"],"width":2.0,"points":PackedVector3Array(info["route_waypoints"])})
 	for i in range(3):
-		var p := Vector2([21.0,43.0,51.0][i],32)
+		var p := Vector2([21.0,43.0,51.0][i],52)
 		var info := _build_house({"id":"open_home_%d"%i,"centreXZ":p,"width":6,"depth":6,"storeys":2,"orientation":0.0,"enterable":true,"seed":51+i,"plaster_id":[20,11,31][i],"district":"main_avenue","detail_level":1})
 		var bounds: AABB = info["bounds"]
 		_reserved.append(Rect2(Vector2(bounds.position.x,bounds.position.z),Vector2(bounds.size.x,bounds.size.z)).grow(0.25))
-		_street("open_home_%d_access"%i,"見学できる民家",2,[Vector2(p.x,26),Vector2(p.x,28)],"civic")
+		_street("open_home_%d_access"%i,"見学できる民家",2,[Vector2(p.x,46),Vector2(p.x,48)],"civic")
 		_routes.append({"id":"open_home_%d_interior"%i,"points":PackedVector3Array(info["route_waypoints"]),"width":2.0})
 
 func _military_quarter() -> void:
@@ -329,17 +355,6 @@ func _market() -> void:
 	_landmarks.append({"id":"market","title":"商人たちの市場","kind":"market","position":Vector3(-85,FEET_Y,26)})
 	_street("market_aisle","市場の通り抜け",4,[Vector2(-109,26),Vector2(-60,26)],"main")
 
-
-func _royal_street_frontages() -> void:
-	# A symmetrical palace-facing street wall gives the E/W royal avenue
-	# a formal frontage while leaving the 36m central approach entirely open.
-	for side in [-1.0,1.0]:
-		for run in range(2):
-			var group: Array[Dictionary] = []
-			for i in range(4):
-				var x := 20.5+float(run)*22.5+float(i)*5.0
-				group.append(_house_spec(Vector2(side*x,-8.5),5,5,PI,"main_avenue",1 if i==1 else 0))
-			_try_terrace(group)
 
 func _perimeter_street_frontages() -> void:
 	# The previously empty strips beside the long western/eastern walls are
@@ -592,31 +607,39 @@ func _rope_anchor(c: Vector2,direction: Vector2,height: float) -> Dictionary:
 
 
 func _formal_forecourt() -> void:
-	# The raised palace gardens are supplied by the terrace builder. This
-	# ground-level forecourt stays open all the way to the first grand stair.
-	var f := Vector3(0,2,14)
+	# The garden helper owns the fountain, formal beds, water and ornaments.
+	# Layout consumes its exact reservations before placing any housing.
+	if ResourceLoader.exists("res://scripts/voxel/royal_gardens.gd"):
+		var gardens: Dictionary = load("res://scripts/voxel/royal_gardens.gd").new().build(_v,_details)
+		_reserved.append_array(gardens.get("reserved",[]))
+		_parks.append_array(gardens.get("parks",[]))
+		_ground_regions.append_array(gardens.get("ground_regions",[]))
+		_landmarks.append_array(gardens.get("landmarks",[]))
+		_viewpoints.append_array(gardens.get("viewpoints",[]))
+		_garden_stats = gardens.get("stats",{})
+		_fountain = gardens.get("fountain",{})
+		if _fountain.has("perimeter_route"):
+			_routes.append({"id":"royal_fountain_perimeter","title":"王冠の大噴水を巡る道","width":4.0,"points":PackedVector3Array(_fountain["perimeter_route"])})
 	for side in [-1.0,1.0]:
-		_box(f+Vector3(side*2.5,0.25,0),Vector3(0.5,0.5,4),5)
-		_box(f+Vector3(0,0.25,side*2.5),Vector3(4,0.5,0.5),5)
-		for other in [-1.0,1.0]: _box(f+Vector3(side*2,0.25,other*2),Vector3(0.5,0.5,0.5),5)
-	_details.add_box(f+Vector3(0,0.1875,0),Vector3(4.5,0.125,4.5),15)
-	_box(f+Vector3(0,0.5,0),Vector3(1.5,1,1.5),5)
-	_box(f+Vector3(0,1.75,0),Vector3(0.5,1.5,0.5),5)
-	_box(f+Vector3(0,2.5,0),Vector3(2,0.5,2),5)
-	_details.add_box(f+Vector3(0,2.8125,0),Vector3(1.5,0.125,1.5),27)
-	for side in [-1.0,1.0]:
-		for z in [47.0,87.0,127.0]:
-			# Small identical plane-tree bays punctuate the formal avenue.
-			_tree(Vector3(side*9.5,2,z),5.5)
-	_landmarks.append({"id":"central_plaza","title":"中央噴水広場","kind":"plaza","position":Vector3(7,FEET_Y,20)})
-	_landmarks.append({"id":"royal_garden","title":"王城の大階段","kind":"garden","position":Vector3(0,FEET_Y,-10)})
-	_viewpoints.append(_walk_view("royal_garden","大階段から仰ぐ王城",Vector2(0,-10),Vector3(0,58,-99)))
+		for z in [47.0,87.0,127.0]: _tree(Vector3(side*9.5,2,z),5.5)
+	_viewpoints.append(_walk_view("royal_garden","庭園から仰ぐ王城",Vector2(0,-10),Vector3(0,58,-99)))
+	# An open civic square joins guild, tavern and the market; green margins
+	# shade its benches while the central avenue and guild portico stay clear.
+	_ground_regions.append({"id":"guild_square","kind":"civic","bounds":Rect2(-110,-10,43,24)})
+	for rect in [Rect2(-110,5.5,6,8.5),Rect2(-75,5.5,8,8.5)]:
+		_ground_regions.append({"id":"guild_green_margin","kind":"park","bounds":rect})
+	for p in [Vector2(-108,9),Vector2(-71,9),Vector2(-108,-6),Vector2(-72,-6)]: _tree(Vector3(p.x,2,p.y),5.5)
+	_details.bench(Vector3(-105,2,10),PI*0.5)
+	_details.bench(Vector3(-74,2,10),-PI*0.5)
+	_landmarks.append({"id":"guild_square","title":"冒険者広場","kind":"square","position":Vector3(-85,FEET_Y,8),"bounds":AABB(Vector3(-110,2,-10),Vector3(43,8,24))})
 
 func _neighbourhood_parks() -> void:
 	for spec in [
 		{"id":"east_park","title":"東の市民公園","rect":Rect2(29,10,33,27)},
 		{"id":"southwest_green","title":"古街区の緑の広場","rect":Rect2(-61,70,24,22)},
 		{"id":"church_green","title":"教会の薬草園","rect":Rect2(113,-100,21,37)},
+		{"id":"workers_green","title":"職人街の公園","rect":Rect2(69,70,26,22)},
+		{"id":"medical_green","title":"診療所の庭","rect":Rect2(109,-54,25,20)},
 	]:
 		var rect: Rect2 = spec["rect"]
 		_reserved.append(rect)
@@ -629,11 +652,18 @@ func _neighbourhood_parks() -> void:
 		elif spec["id"]=="southwest_green":
 			for p in [Vector2(-56,75),Vector2(-42,75),Vector2(-56,91),Vector2(-42,91)]: _tree(Vector3(p.x,2,p.y),5)
 			_details.bench(Vector3(-49,2,78),0)
+		elif spec["id"]=="workers_green":
+			for p in [Vector2(74,75),Vector2(90,75),Vector2(74,91),Vector2(90,91)]: _tree(Vector3(p.x,2,p.y),5.5)
+			_details.bench(Vector3(82,2,78),0)
+		elif spec["id"]=="medical_green":
+			for p in [Vector2(115,-49),Vector2(128,-49),Vector2(115,-39),Vector2(128,-39)]: _tree(Vector3(p.x,2,p.y),5.5)
+			_details.bench(Vector3(122,2,-43),0)
 		else:
 			for p in [Vector2(119,-99),Vector2(121,-84),Vector2(119,-66)]: _tree(Vector3(p.x,2,p.y),4.5)
 			_details.bench(Vector3(122,2,-78),PI*0.5)
 
 func _tree(pos: Vector3,height: float) -> void:
+	_tree_count += 1
 	_box(pos+Vector3(0,height*0.35,0),Vector3(0.5,height*0.7,0.5),10)
 	var radius:=2.0 if height<5.5 else 2.5
 	_box(pos+Vector3(0,height*0.65,0),Vector3(radius*2,2.0,radius*1.5),3)

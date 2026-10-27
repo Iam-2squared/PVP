@@ -45,7 +45,8 @@ func _run() -> void:
 	_space=world.get_world_3d().direct_space_state
 	var town: Dictionary=world.town_data
 	_check(not town.is_empty(),"No castle town in the baked scene")
-	_check(world.house_count>=450,"Dense residential blocks are missing")
+	# The palace forecourt and new public parks intentionally replace some plots.
+	_check(world.house_count>=400,"Dense residential blocks are missing")
 	var routes: Array=town.get("route_waypoints",[])
 	_check(not routes.is_empty(),"Missing connected town walking routes")
 	for route in routes:

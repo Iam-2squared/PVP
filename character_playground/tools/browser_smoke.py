@@ -188,9 +188,20 @@ async def check_profile(browser, args, name, width, height, mobile):
             await page.wait_for_timeout(120)
             await capture("jump")
             await page.wait_for_timeout(650)
-        await menu()
+        if mobile:
+            await menu()
+        else:
+            # Verify the browser-reserved Escape path separately from Tab.
+            await page.keyboard.press("Escape")
+            await page.wait_for_function("document.pointerLockElement === null")
+            await page.wait_for_timeout(350)
+            await start("warrior", False)
+            results["escape_menu"] = {"single_escape_opens_menu": True, "enter_resumes_play": True, "browser_pointerlock_released": True}
+            await menu()
         assert not errors, f"Runtime errors: {errors}"
-        results.update(passed=True, variants_started=variants, movement_rgb_difference=round(movement, 3), errors=errors)
+        results.update(passed=True, variants_started=variants, movement_rgb_difference=round(movement, 3),
+                       attack_input_exercised="native tap and double tap" if mobile else "mouse click and double click",
+                       multitouch_exercised=mobile, errors=errors)
         return results
     except Exception:
         await capture("failure")

@@ -1,0 +1,61 @@
+[
+  {
+    "profile": "desktop",
+    "viewport": [
+      1280,
+      720
+    ],
+    "native_touch": false,
+    "passed": true,
+    "variants_started": [
+      "warrior:male",
+      "mage:male",
+      "scout:male",
+      "archer:male",
+      "cleric:male",
+      "artisan:male",
+      "warrior:female",
+      "mage:female",
+      "scout:female",
+      "archer:female",
+      "cleric:female",
+      "artisan:female"
+    ],
+    "movement_rgb_difference": 59.432,
+    "errors": [],
+    "escape_menu": {
+      "single_escape_opens_menu": true,
+      "enter_resumes_play": true,
+      "browser_pointerlock_released": true
+    },
+    "attack_input_exercised": "mouse click and double click",
+    "multitouch_exercised": false
+  },
+  {
+    "profile": "mobile",
+    "viewport": [
+      844,
+      390
+    ],
+    "native_touch": true,
+    "passed": true,
+    "variants_started": [
+      "warrior:male",
+      "mage:male",
+      "scout:male",
+      "archer:male",
+      "cleric:male",
+      "artisan:male",
+      "warrior:female",
+      "mage:female",
+      "scout:female",
+      "archer:female",
+      "cleric:female",
+      "artisan:female"
+    ],
+    "movement_rgb_difference": 53.79,
+    "errors": [],
+    "attack_input_exercised": "native tap and double tap",
+    "multitouch_exercised": true
+  }
+]

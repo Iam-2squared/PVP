@@ -78,7 +78,7 @@ func _capture() -> void:
 		push_error(argument_error)
 		quit(1)
 		return
-	var scene_path: String = ProjectSettings.get_setting("application/run/main_scene", "res://scenes/main.tscn")
+	var scene_path: String = "res://scenes/main.tscn"
 	if scene_path.is_empty():
 		scene_path = "res://scenes/main.tscn"
 	var packed: PackedScene = load(scene_path)

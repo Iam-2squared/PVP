@@ -1,0 +1,9 @@
+{
+  "renderer": "Two isolated Chromium SwiftShader processes; not a smartphone benchmark",
+  "automation_scheduling": "Inactive renderer frozen with Chrome Page lifecycle; both real WebSockets stay connected and the game sends its own snapshot ACKs.",
+  "results": [],
+  "distinct_real_browser_users": true,
+  "same_arena_two_player_snapshot": true,
+  "passed": false,
+  "error": "Rendered world appears blank: RGB standard deviation=3.86"
+}

@@ -1,0 +1,527 @@
+{
+	"checks": [
+		{
+			"description": "warrior male: articulated voxel figure",
+			"passed": true
+		},
+		{
+			"description": "warrior male: walk/attack animation moves hand",
+			"passed": true
+		},
+		{
+			"description": "warrior female: articulated voxel figure",
+			"passed": true
+		},
+		{
+			"description": "warrior female: walk/attack animation moves hand",
+			"passed": true
+		},
+		{
+			"description": "warrior: accepts normal attack",
+			"passed": true
+		},
+		{
+			"description": "warrior: cooldown prevents duplicate attack",
+			"passed": true
+		},
+		{
+			"description": "warrior: basic attack actually damages target",
+			"passed": true
+		},
+		{
+			"description": "warrior: strong attack deals exactly 1.2x",
+			"passed": true
+		},
+		{
+			"description": "warrior: strong attack keeps normal range",
+			"passed": true
+		},
+		{
+			"description": "warrior: attack cannot exceed its range",
+			"passed": true
+		},
+		{
+			"description": "warrior: unequipped attack punches",
+			"passed": true
+		},
+		{
+			"description": "warrior: unequipped strong punch is 1.2x",
+			"passed": true
+		},
+		{
+			"description": "warrior: unarmed skill is blocked",
+			"passed": true
+		},
+		{
+			"description": "warrior: job skill accepted",
+			"passed": true
+		},
+		{
+			"description": "warrior: skill cooldown enforced",
+			"passed": true
+		},
+		{
+			"description": "warrior: skill consumes provisional MP",
+			"passed": true
+		},
+		{
+			"description": "warrior: skill produces actual healing/damage",
+			"passed": true
+		},
+		{
+			"description": "mage male: articulated voxel figure",
+			"passed": true
+		},
+		{
+			"description": "mage male: walk/attack animation moves hand",
+			"passed": true
+		},
+		{
+			"description": "mage female: articulated voxel figure",
+			"passed": true
+		},
+		{
+			"description": "mage female: walk/attack animation moves hand",
+			"passed": true
+		},
+		{
+			"description": "mage: accepts normal attack",
+			"passed": true
+		},
+		{
+			"description": "mage: cooldown prevents duplicate attack",
+			"passed": true
+		},
+		{
+			"description": "mage: basic attack actually damages target",
+			"passed": true
+		},
+		{
+			"description": "mage: strong attack deals exactly 1.2x",
+			"passed": true
+		},
+		{
+			"description": "mage: strong attack keeps normal range",
+			"passed": true
+		},
+		{
+			"description": "mage: attack cannot exceed its range",
+			"passed": true
+		},
+		{
+			"description": "mage: unequipped attack punches",
+			"passed": true
+		},
+		{
+			"description": "mage: unequipped strong punch is 1.2x",
+			"passed": true
+		},
+		{
+			"description": "mage: unarmed skill is blocked",
+			"passed": true
+		},
+		{
+			"description": "mage: job skill accepted",
+			"passed": true
+		},
+		{
+			"description": "mage: skill cooldown enforced",
+			"passed": true
+		},
+		{
+			"description": "mage: skill consumes provisional MP",
+			"passed": true
+		},
+		{
+			"description": "mage: skill produces actual healing/damage",
+			"passed": true
+		},
+		{
+			"description": "scout male: articulated voxel figure",
+			"passed": true
+		},
+		{
+			"description": "scout male: walk/attack animation moves hand",
+			"passed": true
+		},
+		{
+			"description": "scout female: articulated voxel figure",
+			"passed": true
+		},
+		{
+			"description": "scout female: walk/attack animation moves hand",
+			"passed": true
+		},
+		{
+			"description": "scout: accepts normal attack",
+			"passed": true
+		},
+		{
+			"description": "scout: cooldown prevents duplicate attack",
+			"passed": true
+		},
+		{
+			"description": "scout: basic attack actually damages target",
+			"passed": true
+		},
+		{
+			"description": "scout: strong attack deals exactly 1.2x",
+			"passed": true
+		},
+		{
+			"description": "scout: strong attack keeps normal range",
+			"passed": true
+		},
+		{
+			"description": "scout: attack cannot exceed its range",
+			"passed": true
+		},
+		{
+			"description": "scout: unequipped attack punches",
+			"passed": true
+		},
+		{
+			"description": "scout: unequipped strong punch is 1.2x",
+			"passed": true
+		},
+		{
+			"description": "scout: unarmed skill is blocked",
+			"passed": true
+		},
+		{
+			"description": "scout: job skill accepted",
+			"passed": true
+		},
+		{
+			"description": "scout: skill cooldown enforced",
+			"passed": true
+		},
+		{
+			"description": "scout: skill consumes provisional MP",
+			"passed": true
+		},
+		{
+			"description": "scout: skill produces actual healing/damage",
+			"passed": true
+		},
+		{
+			"description": "archer male: articulated voxel figure",
+			"passed": true
+		},
+		{
+			"description": "archer male: walk/attack animation moves hand",
+			"passed": true
+		},
+		{
+			"description": "archer female: articulated voxel figure",
+			"passed": true
+		},
+		{
+			"description": "archer female: walk/attack animation moves hand",
+			"passed": true
+		},
+		{
+			"description": "archer: accepts normal attack",
+			"passed": true
+		},
+		{
+			"description": "archer: cooldown prevents duplicate attack",
+			"passed": true
+		},
+		{
+			"description": "archer: basic attack actually damages target",
+			"passed": true
+		},
+		{
+			"description": "archer: strong attack deals exactly 1.2x",
+			"passed": true
+		},
+		{
+			"description": "archer: strong attack keeps normal range",
+			"passed": true
+		},
+		{
+			"description": "archer: attack cannot exceed its range",
+			"passed": true
+		},
+		{
+			"description": "archer: unequipped attack punches",
+			"passed": true
+		},
+		{
+			"description": "archer: unequipped strong punch is 1.2x",
+			"passed": true
+		},
+		{
+			"description": "archer: unarmed skill is blocked",
+			"passed": true
+		},
+		{
+			"description": "archer: job skill accepted",
+			"passed": true
+		},
+		{
+			"description": "archer: skill cooldown enforced",
+			"passed": true
+		},
+		{
+			"description": "archer: skill consumes provisional MP",
+			"passed": true
+		},
+		{
+			"description": "archer: skill produces actual healing/damage",
+			"passed": true
+		},
+		{
+			"description": "cleric male: articulated voxel figure",
+			"passed": true
+		},
+		{
+			"description": "cleric male: walk/attack animation moves hand",
+			"passed": true
+		},
+		{
+			"description": "cleric female: articulated voxel figure",
+			"passed": true
+		},
+		{
+			"description": "cleric female: walk/attack animation moves hand",
+			"passed": true
+		},
+		{
+			"description": "cleric: accepts normal attack",
+			"passed": true
+		},
+		{
+			"description": "cleric: cooldown prevents duplicate attack",
+			"passed": true
+		},
+		{
+			"description": "cleric: basic attack actually damages target",
+			"passed": true
+		},
+		{
+			"description": "cleric: strong attack deals exactly 1.2x",
+			"passed": true
+		},
+		{
+			"description": "cleric: strong attack keeps normal range",
+			"passed": true
+		},
+		{
+			"description": "cleric: attack cannot exceed its range",
+			"passed": true
+		},
+		{
+			"description": "cleric: unequipped attack punches",
+			"passed": true
+		},
+		{
+			"description": "cleric: unequipped strong punch is 1.2x",
+			"passed": true
+		},
+		{
+			"description": "cleric: unarmed skill is blocked",
+			"passed": true
+		},
+		{
+			"description": "cleric: job skill accepted",
+			"passed": true
+		},
+		{
+			"description": "cleric: skill cooldown enforced",
+			"passed": true
+		},
+		{
+			"description": "cleric: skill consumes provisional MP",
+			"passed": true
+		},
+		{
+			"description": "cleric: skill produces actual healing/damage",
+			"passed": true
+		},
+		{
+			"description": "artisan male: articulated voxel figure",
+			"passed": true
+		},
+		{
+			"description": "artisan male: walk/attack animation moves hand",
+			"passed": true
+		},
+		{
+			"description": "artisan female: articulated voxel figure",
+			"passed": true
+		},
+		{
+			"description": "artisan female: walk/attack animation moves hand",
+			"passed": true
+		},
+		{
+			"description": "artisan: accepts normal attack",
+			"passed": true
+		},
+		{
+			"description": "artisan: cooldown prevents duplicate attack",
+			"passed": true
+		},
+		{
+			"description": "artisan: basic attack actually damages target",
+			"passed": true
+		},
+		{
+			"description": "artisan: strong attack deals exactly 1.2x",
+			"passed": true
+		},
+		{
+			"description": "artisan: strong attack keeps normal range",
+			"passed": true
+		},
+		{
+			"description": "artisan: attack cannot exceed its range",
+			"passed": true
+		},
+		{
+			"description": "artisan: unequipped attack punches",
+			"passed": true
+		},
+		{
+			"description": "artisan: unequipped strong punch is 1.2x",
+			"passed": true
+		},
+		{
+			"description": "artisan: unarmed skill is blocked",
+			"passed": true
+		},
+		{
+			"description": "artisan: job skill accepted",
+			"passed": true
+		},
+		{
+			"description": "artisan: skill cooldown enforced",
+			"passed": true
+		},
+		{
+			"description": "artisan: skill consumes provisional MP",
+			"passed": true
+		},
+		{
+			"description": "artisan: skill produces actual healing/damage",
+			"passed": true
+		},
+		{
+			"description": "warrior: wall blocks basic attack",
+			"passed": true
+		},
+		{
+			"description": "warrior: wall blocks offensive skill",
+			"passed": true
+		},
+		{
+			"description": "mage: wall blocks basic attack",
+			"passed": true
+		},
+		{
+			"description": "mage: wall blocks offensive skill",
+			"passed": true
+		},
+		{
+			"description": "scout: wall blocks basic attack",
+			"passed": true
+		},
+		{
+			"description": "scout: wall blocks offensive skill",
+			"passed": true
+		},
+		{
+			"description": "archer: wall blocks basic attack",
+			"passed": true
+		},
+		{
+			"description": "archer: wall blocks offensive skill",
+			"passed": true
+		},
+		{
+			"description": "cleric: wall blocks basic attack",
+			"passed": true
+		},
+		{
+			"description": "cleric: wall blocks offensive skill",
+			"passed": true
+		},
+		{
+			"description": "artisan: wall blocks basic attack",
+			"passed": true
+		},
+		{
+			"description": "artisan: wall blocks offensive skill",
+			"passed": true
+		},
+		{
+			"description": "single tap waits for double window before firing",
+			"passed": true
+		},
+		{
+			"description": "double tap immediately fires exactly one strong attack",
+			"passed": true
+		},
+		{
+			"description": "double tap never leaks a delayed normal attack",
+			"passed": true
+		},
+		{
+			"description": "single tap resolves as exactly one normal attack",
+			"passed": true
+		},
+		{
+			"description": "opening menu/focus cancellation clears pending attack",
+			"passed": true
+		},
+		{
+			"description": "single skill tap selects without casting",
+			"passed": true
+		},
+		{
+			"description": "double skill tap casts once without earlier selection",
+			"passed": true
+		},
+		{
+			"description": "WASD action actually moves physics character",
+			"passed": true
+		},
+		{
+			"description": "jump button launches grounded character",
+			"passed": true
+		},
+		{
+			"description": "jump lands on collision floor",
+			"passed": true
+		},
+		{
+			"description": "native touch joystick owns first finger",
+			"passed": true
+		},
+		{
+			"description": "second finger double tap fires one strong attack while moving",
+			"passed": true
+		},
+		{
+			"description": "attack release does not steal joystick finger",
+			"passed": true
+		},
+		{
+			"description": "joystick release clears movement",
+			"passed": true
+		},
+		{
+			"description": "window focus loss cancels pending tap",
+			"passed": true
+		},
+		{
+			"description": "Tab and Escape reach controller before GUI focus navigation",
+			"passed": true
+		}
+	],
+	"failures": 0,
+	"passed": true,
+	"total": 130
+}

@@ -1,0 +1,87 @@
+{
+  "renderer": "Chromium SwiftShader; not a smartphone benchmark",
+  "automation_scheduling": "Concurrent two-browser join was verified separately; native UI control/persistence checks run one browser at a time to avoid shared software-GPU contention.",
+  "concurrent_proof_build": "Earlier export with the same networking/progression sources; latest export additionally fixes hidden HUD input interception.",
+  "network_source_sha256": {
+    "scripts/battle/arena_server.gd": "0652b41bccc5d6038f81ba58e3c7148f037bb73fb17e623d3977b1775389fe30",
+    "scripts/battle/arena_client.gd": "6413dcc31c04961bd539c0a84dac4de1869bb6f4819d9ec7de464c616be555a2",
+    "scripts/battle/progression.gd": "adc64f1b3885b51612572bd36003a3686fa059623dedb88796f866a6675cee2a",
+    "scripts/battle/profile_store.gd": "293be4fc21ca74c31a29cd8a92fd48a48334d9299d6aa669994d07fbab98e8e0"
+  },
+  "ui_test_export_sha256": "1f8d68536304aa72096f5d36f6bbd63af177592ddc4f594b5a49bdebb19dd799",
+  "concurrent_join_proof": "battle-concurrent-proof.json",
+  "distinct_real_browser_users": true,
+  "same_arena_two_player_snapshot": true,
+  "results": [
+    {
+      "profile": "desktop",
+      "passed": true,
+      "viewport": [
+        1280,
+        720
+      ],
+      "input": "native mouse and keyboard",
+      "title_to_home": true,
+      "server_join_acknowledged": true,
+      "arena_entry_acknowledged": true,
+      "rendered_snapshots_acknowledged": true,
+      "nonzero_native_input_packets": 5,
+      "movement": {
+        "authoritative_distance_m": 8.48,
+        "render_difference": {
+          "mean_rgb_difference": 41.246,
+          "changed_pixel_fraction": 0.572
+        }
+      },
+      "return_home": {
+        "home_acknowledged": true,
+        "progression_preserved": true
+      },
+      "home_touch_controls_work_after_battle": true,
+      "saved_identity_reused_after_reload": true,
+      "level": 1,
+      "exp": 0,
+      "unspent_points": 0,
+      "fatal_errors": [],
+      "console_errors": []
+    },
+    {
+      "profile": "mobile",
+      "passed": true,
+      "viewport": [
+        844,
+        390
+      ],
+      "input": "native CDP touch",
+      "title_to_home": true,
+      "server_join_acknowledged": true,
+      "arena_entry_acknowledged": true,
+      "rendered_snapshots_acknowledged": true,
+      "nonzero_native_input_packets": 6,
+      "movement": {
+        "authoritative_distance_m": 8.64,
+        "render_difference": {
+          "mean_rgb_difference": 48.011,
+          "changed_pixel_fraction": 0.726
+        }
+      },
+      "return_home": {
+        "home_acknowledged": true,
+        "progression_preserved": true
+      },
+      "home_touch_controls_work_after_battle": true,
+      "saved_identity_reused_after_reload": true,
+      "level": 1,
+      "exp": 0,
+      "unspent_points": 0,
+      "fatal_errors": [],
+      "console_errors": []
+    }
+  ],
+  "passed": true,
+  "concurrent_phase_outcome": {
+    "network_join_passed": true,
+    "full_ui_phase_passed": false,
+    "later_ui_failure": "Rendered world appears blank: RGB standard deviation=3.86"
+  }
+}

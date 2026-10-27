@@ -33,9 +33,7 @@ func _export() -> void:
 		world = _probe_world()
 		root.add_child(world)
 	else:
-		var scene_path: String = ProjectSettings.get_setting("application/run/main_scene", "")
-		if scene_path.is_empty():
-			scene_path = "res://scenes/main.tscn"
+		var scene_path: String = "res://scenes/main.tscn"
 		var packed: PackedScene = load(scene_path)
 		if packed == null:
 			_fail("Cannot load scene: " + scene_path)

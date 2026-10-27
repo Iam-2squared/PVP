@@ -3,6 +3,7 @@ extends CanvasLayer
 signal jump_requested
 signal attack_requested
 signal overview_requested
+signal tour_requested
 
 var player: Node3D
 var world: Node
@@ -10,6 +11,7 @@ var world: Node
 var _root: Control
 var _stick: MoveStick
 var _overview_button: Button
+var _tour_button: Button
 var _attack_button: Button
 var _jump_button: Button
 var _skill_button: Button
@@ -191,7 +193,7 @@ func _ready() -> void:
 	var title := _label("王都セレシア", 25, PAPER)
 	title.position = Vector2(18, 10)
 	_title_panel.add_child(title)
-	var mode := _label("地形・城壁プレビュー" if _environment_preview else "歩行プレビュー", 12, GOLD)
+	var mode := _label("王都見学プレビュー" if _environment_preview else "歩行プレビュー", 12, GOLD)
 	mode.position = Vector2(20, 46)
 	_title_panel.add_child(mode)
 	_area_label = _label("現在地  ·  城下町", 15, PAPER)
@@ -200,6 +202,11 @@ func _ready() -> void:
 	_overview_button = _button("全体図  M", 16, 12)
 	_overview_button.pressed.connect(func() -> void: overview_requested.emit())
 	_interactive.append(_overview_button)
+	_tour_button = _button("見学先 ▶  N", 15, 12)
+	_tour_button.tooltip_text = "次の見学場所へ移動（N）"
+	_tour_button.pressed.connect(func() -> void: tour_requested.emit())
+	_tour_button.visible = _has_preview_locations()
+	_interactive.append(_tour_button)
 	_attack_button = _button("攻撃", 22, 60)
 	_attack_button.pressed.connect(func() -> void: attack_requested.emit())
 	_interactive.append(_attack_button)
@@ -266,8 +273,12 @@ func _layout() -> void:
 	_title_panel.size = Vector2(270, 78)
 	_area_label.position = Vector2(28, 110)
 	_overview_button.position = Vector2(width - 164, 22)
-	_overview_button.size = Vector2(142, 42)
-	_minimap.position = Vector2(width - 164, 76)
+	var header_button_height := 88.0 if _environment_preview and DisplayServer.is_touchscreen_available() else 48.0
+	_overview_button.size = Vector2(142, header_button_height)
+	_tour_button.position = Vector2(width - 350, 22)
+	_tour_button.size = Vector2(174, header_button_height)
+	_tour_button.visible = _has_preview_locations()
+	_minimap.position = Vector2(width - 164, 34 + header_button_height)
 	_minimap.size = Vector2(142, 142)
 	_stick.position = Vector2(38, height - 198)
 	_stick.size = Vector2(150, 150)
@@ -294,7 +305,7 @@ func _input(event: InputEvent) -> void:
 			if _button_touches.has(event.index):
 				get_viewport().set_input_as_handled()
 				return
-			for button in [_overview_button, _attack_button, _jump_button, _skill_button]:
+			for button in [_overview_button, _tour_button, _attack_button, _jump_button, _skill_button]:
 				if is_instance_valid(button) and button.is_visible_in_tree() and button.get_global_rect().has_point(event.position):
 					_button_touches[event.index] = button
 					if not button.disabled:
@@ -314,10 +325,7 @@ func _input(event: InputEvent) -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_WINDOW_FOCUS_OUT:
-		for button in _button_touches.values():
-			if is_instance_valid(button):
-				button.set_pressed_no_signal(false)
-		_button_touches.clear()
+		reset_interaction_state()
 
 
 func _process(delta: float) -> void:
@@ -329,22 +337,7 @@ func _process(delta: float) -> void:
 		_minimap.queue_redraw()
 	if not is_instance_valid(player):
 		return
-	var location := "城壁内" if _environment_preview else "城下町"
-	var best_distance := 37.0
-	if is_instance_valid(world):
-		var locations: Variant = world.get("landmarks")
-		if locations is Array:
-			for entry in locations:
-				if entry is Dictionary and entry.has("position"):
-					var p: Vector3 = entry["position"]
-					var distance := Vector2(player.global_position.x - p.x, player.global_position.z - p.z).length()
-					if distance < best_distance:
-						best_distance = distance
-						location = str(entry.get("title", "城下町"))
-	var p2 := Vector2(absf(player.global_position.x), absf(player.global_position.z))
-	if p2.x > _city_extent or p2.y > _city_extent or p2.x + p2.y > _city_extent * sqrt(2.0):
-		location = "王都の外縁" if best_distance >= 37.0 else location
-	_area_label.text = "現在地  ·  " + location
+	refresh_location()
 	if _debug:
 		var draw_calls := RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME)
 		var objects := RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_OBJECTS_IN_FRAME)
@@ -353,6 +346,53 @@ func _process(delta: float) -> void:
 
 func get_move_vector() -> Vector2:
 	return _stick.value if is_instance_valid(_stick) and not _overview else Vector2.ZERO
+
+
+func _has_preview_locations() -> bool:
+	return _environment_preview and is_instance_valid(player) and player.has_method("get_preview_locations") and not player.get_preview_locations().is_empty()
+
+
+func reset_interaction_state() -> void:
+	if is_instance_valid(_stick):
+		_stick.reset()
+	for button in _button_touches.values():
+		if is_instance_valid(button):
+			button.set_pressed_no_signal(false)
+	_button_touches.clear()
+
+
+func refresh_location() -> void:
+	if not is_instance_valid(player) or not is_instance_valid(_area_label):
+		return
+	var location := "城壁内" if _environment_preview else "城下町"
+	var best_score := 37.0
+	var found := false
+	var entries: Array = []
+	if is_instance_valid(world):
+		var landmarks: Variant = world.get("landmarks")
+		if landmarks is Array:
+			entries.append_array(landmarks)
+	if player.has_method("get_preview_locations"):
+		entries.append_array(player.get_preview_locations())
+	for entry in entries:
+		if not entry is Dictionary or not entry.get("position") is Vector3:
+			continue
+		var p: Vector3 = entry["position"]
+		var height_difference := absf(player.global_position.y - p.y)
+		if height_difference > 3.0:
+			continue
+		var distance := Vector2(player.global_position.x - p.x, player.global_position.z - p.z).length()
+		var score := distance + height_difference * 1.5
+		if distance < 37.0 and score <= best_score:
+			best_score = score
+			found = true
+			location = str(entry.get("title", "城下町"))
+	var p2 := Vector2(absf(player.global_position.x), absf(player.global_position.z))
+	if not found and (p2.x > _city_extent or p2.y > _city_extent or p2.x + p2.y > _city_extent * sqrt(2.0)):
+		location = "王都の外縁"
+	_area_label.text = "現在地  ·  " + location
+	if is_instance_valid(_tour_button):
+		_tour_button.visible = _has_preview_locations()
 
 
 func is_ui_position(pos: Vector2) -> bool:
@@ -375,7 +415,7 @@ func set_overview(enabled: bool) -> void:
 	_crosshair.visible = not enabled
 	_hotbar.visible = not enabled and not _environment_preview
 	_minimap.visible = not enabled
-	_help_label.text = "M または右上のボタンで歩行へ戻る" if enabled else "WASD 移動   ·   マウス 視点   ·   Space ジャンプ   ·   M 全体図"
+	_help_label.text = "M または右上のボタンで歩行へ戻る" if enabled else "WASD 移動   ·   マウス 視点   ·   Space ジャンプ   ·   N 見学先   ·   M 全体図" if _has_preview_locations() else "WASD 移動   ·   マウス 視点   ·   Space ジャンプ   ·   M 全体図"
 
 
 func set_debug(enabled: bool) -> void:

@@ -17,13 +17,19 @@ func _ready() -> void:
 	player.world = world
 	add_child(player)
 	player.position = world.get_spawn_position()
-	print("VOXEL_WORLD_READY ",JSON.stringify(world.stats))
+	print("VOXEL_WORLD_READY ",JSON.stringify({
+		"stage":world.stats.get("stage","walls"),
+		"city_width_m":world.city_half_extent*2,
+		"palace_rooms":world.palace_data.get("room_count",0),
+		"town_houses":world.house_count,
+		"tour_locations":world.preview_locations.size()
+	}))
 
 func _lighting() -> void:
 	var sky_material := ProceduralSkyMaterial.new()
 	sky_material.sky_top_color = Color("649fc7")
 	sky_material.sky_horizon_color = Color("d0dfdf")
-	sky_material.ground_bottom_color = Color("73885f")
+	sky_material.ground_bottom_color = Color("a19070")
 	sky_material.ground_horizon_color = Color("d0dfdf")
 	var sky := Sky.new()
 	sky.sky_material = sky_material
@@ -32,7 +38,7 @@ func _lighting() -> void:
 	environment.sky = sky
 	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	environment.ambient_light_color = Color("d3e2ed")
-	environment.ambient_light_energy = 0.30
+	environment.ambient_light_energy = 0.42
 	environment.tonemap_mode = Environment.TONE_MAPPER_LINEAR
 	environment.fog_enabled = true
 	environment.fog_light_color = Color("b9d0d9")
@@ -44,10 +50,10 @@ func _lighting() -> void:
 	sun.name = "Sun"
 	sun.rotation_degrees = Vector3(-43, -28, 0)
 	sun.light_color = Color("fff5e5")
-	sun.light_energy = 0.85
+	sun.light_energy = 0.78
 	sun.shadow_enabled = true
 	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS
-	sun.directional_shadow_max_distance = 180.0
+	sun.directional_shadow_max_distance = 120.0
 	sun.directional_shadow_split_1 = 0.15
 	sun.shadow_bias = 0.18
 	sun.shadow_normal_bias = 2.0

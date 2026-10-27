@@ -28,6 +28,7 @@ var _last_attack_ms := -1000
 var _environment_preview := false
 var _step_visual_offset := 0.0
 var _world_extent := 470.0
+var _preview_location_index := -1
 
 
 func _ready() -> void:
@@ -49,6 +50,7 @@ func _ready() -> void:
 	hud.jump_requested.connect(_queue_jump)
 	hud.attack_requested.connect(_attack)
 	hud.overview_requested.connect(func(): set_overview(not _overview))
+	hud.tour_requested.connect(next_preview_location)
 	# Every finger is tracked explicitly; mouse emulation supports only one.
 	Input.emulate_mouse_from_touch = false
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
@@ -76,13 +78,19 @@ func _create_cameras() -> void:
 	aerial_camera = Camera3D.new()
 	aerial_camera.name = "OverviewCamera"
 	aerial_camera.projection = Camera3D.PROJECTION_ORTHOGONAL
-	aerial_camera.size = 320.0 if _environment_preview else 385.0
+	var city_scale := 1.0
+	if _environment_preview and is_instance_valid(world):
+		for property in world.get_property_list():
+			if property["name"] == "city_half_extent":
+				city_scale = maxf(float(world.get("city_half_extent")), 64.0) / 160.0
+				break
+	aerial_camera.size = 400.0 * city_scale if _environment_preview else 385.0
 	aerial_camera.near = 0.2
 	aerial_camera.far = 1500.0
 	add_child(aerial_camera)
 	aerial_camera.top_level = true
-	aerial_camera.global_position = Vector3(0.0, 340.0, 270.0) if _environment_preview else Vector3(0.0, 460.0, 330.0)
-	aerial_camera.look_at(Vector3(0,4,0) if _environment_preview else Vector3.ZERO, Vector3.UP)
+	aerial_camera.global_position = Vector3(0.0, 440.0, 340.0) * city_scale if _environment_preview else Vector3(0.0, 460.0, 330.0)
+	aerial_camera.look_at(Vector3(0,10,0) * city_scale if _environment_preview else Vector3.ZERO, Vector3.UP)
 
 
 func _create_weapon() -> void:
@@ -165,6 +173,9 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		KEY_R:
 			respawn()
 			get_viewport().set_input_as_handled()
+		KEY_N:
+			if next_preview_location():
+				get_viewport().set_input_as_handled()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -332,6 +343,60 @@ func set_overview(enabled: bool) -> void:
 
 func get_overview() -> bool:
 	return _overview
+
+
+func get_preview_locations() -> Array[Dictionary]:
+	var locations: Array[Dictionary] = []
+	if not _environment_preview or not is_instance_valid(world):
+		return locations
+	var entries: Variant = null
+	for property in world.get_property_list():
+		if property["name"] == "preview_locations":
+			entries = world.get("preview_locations")
+			break
+	if entries is Array:
+		for entry in entries:
+			if entry is Dictionary and entry.get("position") is Vector3:
+				locations.append(entry)
+	return locations
+
+
+func get_preview_location_index() -> int:
+	return _preview_location_index
+
+
+func next_preview_location() -> bool:
+	var locations := get_preview_locations()
+	if locations.is_empty():
+		return false
+	return visit_preview_location(posmod(_preview_location_index + 1, locations.size()))
+
+
+func visit_preview_location(index: int) -> bool:
+	var locations := get_preview_locations()
+	if index < 0 or index >= locations.size():
+		return false
+	var destination: Dictionary = locations[index]
+	if _overview:
+		set_overview(false)
+	velocity = Vector3.ZERO
+	_jump_queued = false
+	_look_touch = -1
+	_step_visual_offset = 0.0
+	_attack_time = 0.0
+	_preview_location_index = index
+	if is_instance_valid(hud) and hud.has_method("reset_interaction_state"):
+		hud.reset_interaction_state()
+	# Entries specify the character's feet, not an eye position. Do not add Y.
+	global_position = destination["position"]
+	rotation = Vector3(0.0, deg_to_rad(float(destination.get("yaw_degrees", 0.0))), 0.0)
+	_pitch = deg_to_rad(float(destination.get("pitch_degrees", 0.0)))
+	camera.rotation = Vector3(_pitch, 0.0, 0.0)
+	camera.position.y = 1.65
+	reset_physics_interpolation()
+	if is_instance_valid(hud) and hud.has_method("refresh_location"):
+		hud.refresh_location()
+	return true
 
 
 func respawn() -> void:

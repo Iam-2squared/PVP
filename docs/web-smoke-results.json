@@ -1,0 +1,83 @@
+{
+  "renderer": "Chromium SwiftShader; not a phone benchmark",
+  "results": [
+    {
+      "profile": "desktop",
+      "passed": true,
+      "viewport": [
+        1280,
+        720
+      ],
+      "touch": false,
+      "status_overlay_removed": true,
+      "voxel_world_ready": true,
+      "world": {
+        "city_width_m": 320.0,
+        "palace_rooms": 21,
+        "stage": "town",
+        "tour_locations": 13,
+        "town_houses": 304
+      },
+      "movement_difference": {
+        "mean_rgb_difference": 3.277,
+        "changed_pixel_fraction": 0.0742
+      },
+      "overview_difference": {
+        "mean_rgb_difference": 65.063,
+        "changed_pixel_fraction": 0.9838
+      },
+      "return_difference": {
+        "mean_rgb_difference": 0,
+        "changed_pixel_fraction": 0.0
+      },
+      "tour_difference": {
+        "mean_rgb_difference": 78.114,
+        "changed_pixel_fraction": 0.9293
+      },
+      "tour_steps": 2,
+      "tour_input": "N key",
+      "rgb_standard_deviation": 145.58,
+      "fatal_errors": [],
+      "console_errors": []
+    },
+    {
+      "profile": "mobile",
+      "passed": true,
+      "viewport": [
+        844,
+        390
+      ],
+      "touch": true,
+      "status_overlay_removed": true,
+      "voxel_world_ready": true,
+      "world": {
+        "city_width_m": 320.0,
+        "palace_rooms": 21,
+        "stage": "town",
+        "tour_locations": 13,
+        "town_houses": 304
+      },
+      "movement_difference": {
+        "mean_rgb_difference": 9.335,
+        "changed_pixel_fraction": 0.2023
+      },
+      "overview_difference": {
+        "mean_rgb_difference": 62.782,
+        "changed_pixel_fraction": 0.9825
+      },
+      "return_difference": {
+        "mean_rgb_difference": 0,
+        "changed_pixel_fraction": 0.0
+      },
+      "tour_difference": {
+        "mean_rgb_difference": 78.615,
+        "changed_pixel_fraction": 0.935
+      },
+      "tour_steps": 2,
+      "tour_input": "native touch",
+      "rgb_standard_deviation": 144.99,
+      "fatal_errors": [],
+      "console_errors": []
+    }
+  ]
+}

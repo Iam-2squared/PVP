@@ -21,6 +21,7 @@ var has_camera_target := false
 var has_yaw := false
 var has_pitch := false
 var argument_error := ""
+var tour_id := ""
 
 
 func _initialize() -> void:
@@ -31,6 +32,8 @@ func _initialize() -> void:
 			hide_hud = true
 		elif argument.begins_with("--output="):
 			output = argument.trim_prefix("--output=")
+		elif argument.begins_with("--tour="):
+			tour_id=argument.trim_prefix("--tour=")
 		elif argument.begins_with("--wait="):
 			wait_seconds = argument.trim_prefix("--wait=").to_float()
 		elif argument.begins_with("--position="):
@@ -88,6 +91,19 @@ func _capture() -> void:
 	current_scene = scene
 	await create_timer(wait_seconds).timeout
 	var player := root.find_child("Player", true, false)
+	if not tour_id.is_empty() and player!=null and player.has_method("get_preview_locations"):
+		var found:=false
+		var locations: Array=player.get_preview_locations()
+		for i in range(locations.size()):
+			if str(locations[i].get("id",""))==tour_id:
+				player.visit_preview_location(i)
+				player.set_physics_process(false)
+				found=true
+				break
+		if not found:
+			push_error("Unknown tour location: "+tour_id)
+			quit(1)
+			return
 	if (has_player_position or has_yaw or has_pitch) and not player is Node3D:
 		push_error("Player framing arguments require a Player Node3D")
 		quit(1)

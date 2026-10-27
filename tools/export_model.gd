@@ -102,6 +102,11 @@ func _collect(node: Node) -> void:
 			instance.mesh = source.mesh
 			instance.transform = source.global_transform
 			instance.material_override = source.material_override
+			if source.has_meta("glb_albedo"):
+				var fallback:=StandardMaterial3D.new()
+				fallback.albedo_color=source.get_meta("glb_albedo")
+				fallback.roughness=1.0
+				instance.material_override=fallback
 			for surface_index in range(source.mesh.get_surface_count()):
 				var material := source.get_surface_override_material(surface_index)
 				if material != null:

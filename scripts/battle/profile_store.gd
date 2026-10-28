@@ -11,8 +11,21 @@ func _init(save_path: String = DEFAULT_PATH) -> void:
 	path = save_path
 	_load()
 
+func _suggested_endpoint() -> String:
+	# Only the temporary Cloudflare host uses the same origin as its game socket.
+	# Leave existing desktop/LAN or other hosted preview settings unchanged.
+	if OS.has_feature("web"):
+		var host: Variant = JavaScriptBridge.eval("window.location.hostname", true)
+		if host is String and str(host).ends_with(".trycloudflare.com"):
+			var authority: Variant = JavaScriptBridge.eval("window.location.host", true)
+			if authority is String and not str(authority).is_empty():
+				return "wss://" + str(authority) + "/ws"
+	return DEFAULT_ENDPOINT
+
+
 func _load() -> void:
-	data = {"version":1,"endpoint":DEFAULT_ENDPOINT,"username":"冒険者","job_id":"warrior","female":false,"identities":{},"profiles":{}}
+	var proposed := _suggested_endpoint()
+	data = {"version":1,"endpoint":proposed,"username":"冒険者","job_id":"warrior","female":false,"identities":{},"profiles":{}}
 	if not FileAccess.file_exists(path): return
 	var parser:=JSON.new()
 	if parser.parse(FileAccess.get_file_as_string(path))!=OK: return
@@ -23,6 +36,8 @@ func _load() -> void:
 	if saved.get("female") is bool: data["female"] = saved["female"]
 	for key in ["identities","profiles"]:
 		if saved.get(key) is Dictionary: data[key] = saved[key]
+	if proposed != DEFAULT_ENDPOINT and str(data["endpoint"]) == DEFAULT_ENDPOINT:
+		data["endpoint"] = proposed
 
 func save() -> bool:
 	var temporary:=path+".tmp"
@@ -76,3 +91,29 @@ func display_profile(url: String) -> Dictionary:
 
 func has_registered_identity(url: String) -> bool:
 	return not str(identity_for(url).get("token","")).is_empty()
+
+func export_recovery_code(url: String) -> String:
+	var entry: Variant = data["identities"].get(url,{})
+	if not entry is Dictionary: return ""
+	var id := str(entry.get("player_id",""))
+	var token := str(entry.get("token",""))
+	if id.length()!=32 or token.length()!=64 or not id.is_valid_hex_number() or not token.is_valid_hex_number(): return ""
+	return "PVP1-" + id + "-" + token
+
+
+func import_recovery_code(url: String, code: String) -> bool:
+	# This code is a bearer credential, never send it to logs or share links.
+	var parts := code.strip_edges().split("-",false)
+	if parts.size()!=3 or parts[0]!="PVP1": return false
+	var id := str(parts[1]).to_lower()
+	var token := str(parts[2]).to_lower()
+	if id.length()!=32 or token.length()!=64 or not id.is_valid_hex_number() or not token.is_valid_hex_number(): return false
+	var existing: Variant = data["identities"].get(url,{})
+	if existing is Dictionary and not str(existing.get("token","")).is_empty():
+		return str(existing.get("player_id",""))==id and str(existing.get("token",""))==token
+	data["identities"][url]={"player_id":id,"token":token}
+	data["profiles"].erase(url)
+	if save(): return true
+	if existing is Dictionary and not existing.is_empty(): data["identities"][url]=existing
+	else: data["identities"].erase(url)
+	return false

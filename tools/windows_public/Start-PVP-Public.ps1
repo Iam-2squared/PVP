@@ -69,17 +69,25 @@ function Find-Godot {
         $cmd = Get-Command $name -ErrorAction SilentlyContinue
         if ($cmd) { $choices += $cmd.Source }
     }
+    $choices += (Join-Path $bin "Godot_v4.6.3-stable_win64_console.exe")
     $choices += (Join-Path $bin "Godot_v4.6.3-stable_win64.exe")
     foreach ($dir in @($root, (Join-Path $env:USERPROFILE "Downloads"), (Join-Path $env:USERPROFILE "Desktop"))) {
         if (Test-Path $dir) {
             $choices += @(Get-ChildItem -Path $dir -Filter "Godot*win64*.exe" -File -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName)
         }
     }
-    foreach ($path in $choices) {
-        if (-not $path -or -not (Test-Path -LiteralPath $path)) { continue }
+    foreach ($candidate in $choices) {
+        if (-not $candidate -or -not (Test-Path -LiteralPath $candidate)) { continue }
+        $path = (Resolve-Path -LiteralPath $candidate).Path
+        if ($path -match '(?i)_win64\.exe$') {
+            # Windows CLI tasks must use the console executable shipped with
+            # the official Godot Windows editor, not the GUI-subsystem stub.
+            $consolePath = $path.Substring(0, $path.Length - 4) + "_console.exe"
+            if (Test-Path -LiteralPath $consolePath) { $path = $consolePath }
+        }
         try {
             $version = (& $path --version 2>&1 | Select-Object -First 1 | Out-String).Trim()
-            if ($version -match "^4\.6\.3") { return (Resolve-Path -LiteralPath $path).Path }
+            if ($version -match "^4\.6\.3") { return $path }
         } catch {}
     }
     Say "Godot 4.6.3 not found. Downloading the official Windows editor."
@@ -87,8 +95,8 @@ function Find-Godot {
     $uri = "https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_win64.exe.zip"
     Download-Official $uri $archive
     Expand-Archive -Path $archive -DestinationPath $bin -Force
-    $exe = Join-Path $bin "Godot_v4.6.3-stable_win64.exe"
-    if (-not (Test-Path $exe)) { throw "Godot was not extracted successfully." }
+    $exe = Join-Path $bin "Godot_v4.6.3-stable_win64_console.exe"
+    if (-not (Test-Path $exe)) { throw "Godot console editor was not extracted successfully." }
     Remove-Item $archive -Force
     return $exe
 }
@@ -183,9 +191,17 @@ function Build-Web([string]$godot) {
     $stage = Join-Path $runtime "web-next"
     if (Test-Path $stage) { Remove-Item $stage -Recurse -Force }
     New-Item -ItemType Directory -Force -Path $stage | Out-Null
-    Say "Importing project resources..."
-    & $godot --headless --editor --path $root --import
-    if ($LASTEXITCODE -ne 0) { throw "Godot import failed." }
+    Say "Importing project resources using the console Godot executable..."
+    $importLog = Join-Path $logs "godot-import.log"
+    & $godot --headless --path $root --import --log-file $importLog
+    if ($LASTEXITCODE -ne 0) {
+        $importExit = $LASTEXITCODE
+        Say "Import failed; the last log lines are:"
+        if (Test-Path -LiteralPath $importLog) {
+            Get-Content -LiteralPath $importLog -Tail 30 | ForEach-Object { Write-Host $_ }
+        }
+        throw ("Godot import failed (exit " + $importExit + "). See .pvp-local/logs/godot-import.log")
+    }
     Say "Exporting current Web game..."
     & $godot --headless --path $root --export-release Web (Join-Path $stage "index.html")
     if ($LASTEXITCODE -ne 0) { throw "Godot Web export failed. Confirm version 4.6.3 and templates." }

@@ -118,7 +118,7 @@ function Ensure-WebTemplates {
 }
 
 function Test-PortFree([int]$port) {
-    $listener = New-Object System.Net.Sockets.TcpListener([Net.IPAddress]::Loopback, $port)
+    $listener = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Loopback, $port)
     try { $listener.Start() } catch { throw "Local TCP port $port is in use. Run Stop-PVP-Public.bat and retry." }
     finally { $listener.Stop() }
 }
@@ -161,7 +161,11 @@ function Write-Gzip([string]$path) {
 }
 
 function Backup-Profiles {
-    $source = Join-Path $env:APPDATA "Godot\app_userdata\PVP — 王都セレシア\battle_server\profiles.json"
+    $projectFile = Join-Path $root "project.godot"
+    $nameLine = Get-Content -LiteralPath $projectFile -Encoding UTF8 | Where-Object { $_.StartsWith("config/name=") } | Select-Object -First 1
+    if (-not $nameLine) { throw "Game project name was not found in project.godot." }
+    $projectName = $nameLine.Substring("config/name=".Length).Trim('"')
+    $source = Join-Path (Join-Path (Join-Path $env:APPDATA "Godot\app_userdata") $projectName) "battle_server\profiles.json"
     if (-not (Test-Path -LiteralPath $source)) { return }
     $backupDir = Join-Path $runtime "backups"
     New-Item -ItemType Directory -Force -Path $backupDir | Out-Null

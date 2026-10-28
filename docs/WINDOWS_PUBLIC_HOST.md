@@ -39,6 +39,26 @@ Windows実機でGodotのWeb書き出し・gzip準備・Caddy設定確認・Godot
 - `~/.cloudflared/config.yml` / `config.yaml` を使っている場合、Quick Tunnelの動作と衝突するケースがある。自動で削除・改名はせず、画面で案内する。
 - 社内/学校Wi-Fi、Windowsのセキュリティ製品、ルーター、プロバイダがCloudflare宛のTCP/UDP 7844を塞いでいるとQuick Tunnelが接続できない。ログから判断し、必要なら別ネットワークで切り分ける。ポートの外部公開や有料クラウドへの移行は要求しない。
 
+
+## 2026-10-28: Cloudflareは接続済みなのにURLが検出されないケース
+
+実PCログではDNS・QUIC・HTTP/2・Cloudflare APIのprecheckが全てPASSし、`Registered tunnel connection` が出た。しかし起動スクリプトがURLを認識せず中断していた。公開URLは接続登録よりも先にCloudflareログへ出るため、表示した末尾30行には含まれない場合がある。
+
+旧版ではPowerShellが `Start-Process -RedirectStandardError` で作成したファイルを、稼働中に `File.ReadAllText` で読もうとし、アクセスエラーを無視していた。これがURL未検出の有力な原因だが、利用者PCでの厳密な原因確認はまだ行っていない。
+
+修正版:
+- Cloudflareの `--logfile` により、標準エラー出力とは別のログを発行させる（`.pvp-local/logs/cloudflared-primary.log`、再試行時は `cloudflared-http2.log`）。
+- Windowsでファイルが書き込み中でも、共有読み取り権限を付けて全文を解析する。古いURLを誤検出しないよう再実行前のログは `.previous` に退避。
+- 起動に失敗した場合はログの先頭と末尾を表示する。ログ全体を確認するには次のPowerShellを使う（**公開URLだけを抽出**）:
+
+```powershell
+Get-ChildItem "$HOME\PVP\.pvp-local\logs" -Filter "cloudflared-*.log" |
+    Select-String -Pattern 'https://[a-z0-9-]+\.trycloudflare\.com' -AllMatches |
+    ForEach-Object { $_.Matches.Value } | Select-Object -Unique
+```
+
+URLがログにあるだけでは、そのURLが今も稼働中とは限らない。必ず起動ウインドウで公開状態を確認し、実際にブラウザーから表示できることを確かめる。
+
 ## 構成
 
     HTTPS: Cloudflare Quick Tunnel（毎回ランダムなホスト）

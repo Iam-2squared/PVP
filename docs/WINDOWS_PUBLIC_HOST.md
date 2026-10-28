@@ -41,6 +41,7 @@ Cloudflareの公開URLで開いた場合、Godotホームの「プレイヤー�
 ## 初回の注意・トラブル
 
 - Windows 64bit (x86-64) を想定。Godot 4.6.3本体と同バージョンのWeb Export Templatesが必要。見つからなければ公式リリースからダウンロードする。テンプレートの大型ダウンロードは確認が表示される。
+- 2026-10-28のWindows初回公開で、旧ランチャーが `web_release.zip` / `web_debug.zip` のみを配置していた問題を修正した。現行のWeb presetは `variant/thread_support=false` なので **`web_nothreads_debug.zip` と `web_nothreads_release.zip` の両方**が必要。修正後に必要ファイルが不足している場合は、初回だけ公式約1.26GBテンプレートパッケージの**再ダウンロード確認**が出る。古いファイルやセーブデータは削除しない。ダウンロード後は必要な2ファイルだけを取り出し、次回以降は再取得しない。
 - 初回の素材インポート・Web書き出し・ダウンロードにはネット回線と時間が必要。次回以降は必要ツールをキャッシュする。
 - ツール取得元はGodot・Caddy・Cloudflareの公式GitHub Releaseのみ。失敗時は起動を中断しエラーを表示する。
 - 8910・18080ポートが占有されている場合は使用中のプロセスを確認。Stop-PVP-Public.bat は記録済みの自分のプロセスに限り停止する。

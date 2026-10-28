@@ -105,9 +105,6 @@ function Ensure-WebTemplates {
     $target = Join-Path $env:APPDATA "Godot\export_templates\4.6.3.stable"
     $archive = Join-Path $bin "godot-export-templates.zip"
     & (Join-Path $PSScriptRoot "Install-WebTemplates.ps1") -TemplateDir $target -ArchiveCache $archive
-    if ($LASTEXITCODE -ne 0 -and $null -ne $LASTEXITCODE) {
-        throw "Web export template installer exited with an error."
-    }
 }
 
 function Test-PortFree([int]$port) {

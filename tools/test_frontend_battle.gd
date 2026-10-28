@@ -53,6 +53,22 @@ func _test_store()->void:
 	var copy:Dictionary=reloaded.display_profile(store.endpoint())
 	copy.stats.HP=99999
 	_check(reloaded.display_profile(store.endpoint()).stats.HP==100,"A displayed dictionary mutated stored authoritative progression")
+	var recovery_path:="user://test_recovery_%d.json"%Time.get_ticks_usec()
+	_paths.append(recovery_path)
+	var recovery_store=Profiles.new(recovery_path)
+	var original_url:="wss://one.trycloudflare.com/ws"
+	var rotating_url:="wss://two.trycloudflare.com/ws"
+	var first_identity:=recovery_store.identity_for(original_url)
+	var private_token:="a".repeat(64)
+	recovery_store.remember_identity(original_url,{"player_id":first_identity.player_id,"token":private_token})
+	var recovery_code:=recovery_store.export_recovery_code(original_url)
+	_check(recovery_code.begins_with("PVP1-") and recovery_code.length()==102,"A registered identity has no portable recovery code")
+	_check(recovery_store.import_recovery_code(rotating_url,recovery_code),"Rotating public URL cannot restore an existing identity")
+	_check(recovery_store.identity_for(rotating_url).player_id==first_identity.player_id and recovery_store.identity_for(rotating_url).token==private_token,"Recovered identity did not match the server authority")
+	_check(not recovery_store.import_recovery_code(rotating_url,"PVP1-bad"),"Malformed recovery code replaced an identity")
+	_check(not recovery_store.import_recovery_code(rotating_url,"PVP1-"+"b".repeat(32)+"-"+"b".repeat(64)),"Registered identity was silently overwritten")
+	var recovery_reload:=Profiles.new(recovery_path)
+	_check(recovery_reload.identity_for(rotating_url).token==private_token,"Restored token did not persist after reload")
 	var file:=FileAccess.open(path,FileAccess.WRITE)
 	file.store_string("{")
 	file.close()

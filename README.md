@@ -4,6 +4,12 @@
 
 状態：ホーム・キャラクター・時間無制限PvP・成長を接続した試作
 
+## Windows PCから友達と遊ぶ（無料・起動中だけ）
+
+Windowsで **Start-PVP-Public.bat** をダブルクリックすると、Godot対戦サーバーとWebゲームをローカルで起動し、Cloudflare Quick Tunnelの一時HTTPS URLを発行します。終了は **Stop-PVP-Public.bat** または起動ウインドウでEnter。PCスリープ中は接続できません。Cloudflare Quick Tunnelは少人数テスト用で、URLは毎回変わります。**初回接続後はプレイヤー設定の復帰コードを安全に保存**してください。
+
+初回準備（公式ツールの取得・Godot Web Export Templates）や注意点は [Windows公開の手順](docs/WINDOWS_PUBLIC_HOST.md) を参照してください。**サービス利用料は0円**（PCの電力・ネット回線は別）。公開済みかどうかは実機検証で確認します。
+
 ## ホームから王都で対戦する
 
 無料の **Godot 4.6.3** で開ける、スマートフォン横画面・一人称のボクセル3Dゲームです。スタート・ホーム画面、第一6職×男女の12体のキャラクター、王都での対戦と成長をつなげています。

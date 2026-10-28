@@ -1,0 +1,60 @@
+name: Windows on-demand host checks
+
+on:
+  push:
+    branches: [feature/windows-on-demand-public-host]
+  pull_request:
+    paths:
+      - "Start-PVP-Public.bat"
+      - "Stop-PVP-Public.bat"
+      - "tools/windows_public/**"
+      - "scripts/battle/profile_store.gd"
+      - "scripts/frontend/start_home.gd"
+      - "tools/test_frontend_battle.gd"
+      - ".github/workflows/pvp-local-host-check.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  powershell-syntax:
+    runs-on: windows-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Parse Windows PowerShell scripts
+        shell: powershell
+        run: |
+          $ErrorActionPreference = "Stop"
+          foreach ($file in @("tools/windows_public/Start-PVP-Public.ps1", "tools/windows_public/Stop-PVP-Public.ps1")) {
+            $tokens = $null
+            $errors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $file).Path, [ref]$tokens, [ref]$errors) | Out-Null
+            if ($errors.Count -gt 0) {
+              $errors | ForEach-Object { Write-Host $_.ToString() }
+              throw "PowerShell parse errors in $file"
+            }
+          }
+
+  godot-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Download official Godot 4.6.3 Linux editor
+        run: |
+          curl -fL --retry 3 -o godot.zip https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q godot.zip -d /tmp/godot-bin
+          chmod +x /tmp/godot-bin/Godot_v4.6.3-stable_linux.x86_64
+          /tmp/godot-bin/Godot_v4.6.3-stable_linux.x86_64 --version
+      - name: Import project and test portable recovery
+        run: |
+          set -euo pipefail
+          /tmp/godot-bin/Godot_v4.6.3-stable_linux.x86_64 --headless --editor --path . --import
+          /tmp/godot-bin/Godot_v4.6.3-stable_linux.x86_64 --headless --path . --script res://tools/test_frontend_battle.gd

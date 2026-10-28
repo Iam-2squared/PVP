@@ -601,6 +601,43 @@ func show_player_settings() -> void:
 		_close_popup()
 		show_home()
 	,"SavePlayerSettingsButton")
+	_label(column,"復帰コードはアカウントの鍵です。誰にも見せず安全な場所へ保存してください。",13,MUTED,false,true)
+	if _store.has_registered_identity(_store.endpoint()):
+		var code_display:=LineEdit.new()
+		code_display.name="RecoveryCodeDisplay"
+		code_display.editable=false
+		code_display.secret=true
+		code_display.text=_store.export_recovery_code(_store.endpoint())
+		column.add_child(code_display)
+		_button(column,"復帰コードを表示・コピー",func() -> void:
+			code_display.secret=false
+			code_display.select_all()
+			DisplayServer.clipboard_set(code_display.text)
+			error.text="復帰コードを安全な場所へ保存してください。コピーできない場合は表示された文字を選択してください。"
+		,"CopyRecoveryCodeButton")
+	_label(column,"再公開時は新しいURLになるため、以前の復帰コードをここに入力してから接続してください。",13,MUTED,false,true)
+	var recovery_input:=LineEdit.new()
+	recovery_input.name="RecoveryCodeEdit"
+	recovery_input.placeholder_text="PVP1-...（秘密の復帰コード）"
+	recovery_input.secret=true
+	column.add_child(recovery_input)
+	_button(column,"復帰コードで以前のキャラクターに戻る",func() -> void:
+		if _connected() or _connecting:
+			error.text="いったん切断してから復帰してください。"
+			return
+		var url:=endpoint.text.strip_edges()
+		if not (url.begins_with("ws://") or url.begins_with("wss://")) or url.contains(" "):
+			error.text="対戦サーバーのURLが無効です。"
+			return
+		if not _store.import_recovery_code(url,recovery_input.text):
+			error.text="復帰コードが無効、または別の登録済みキャラクターがあります。"
+			return
+		_store.configure(url,str(profile.get("username","冒険者")),str(profile.get("job_id","warrior")),bool(profile.get("female",false)))
+		profile=_store.display_profile(url)
+		_notice_message="復帰コードを保存しました。接続するとサーバーの成長情報を確認します。"
+		_close_popup()
+		show_home()
+	,"RestoreRecoveryCodeButton")
 
 func _exit_tree() -> void:
 	if is_instance_valid(_session): _session.queue_free()

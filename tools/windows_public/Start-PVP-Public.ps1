@@ -154,7 +154,7 @@ function Write-Gzip([string]$path) {
     try {
         $outputStream = [IO.File]::Create($destination)
         try {
-            $compressor = New-Object IO.Compression.GzipStream($outputStream, [IO.Compression.CompressionLevel]::Optimal)
+            $compressor = [System.IO.Compression.GZipStream]::new($outputStream, [System.IO.Compression.CompressionLevel]::Optimal)
             try { $inputStream.CopyTo($compressor) } finally { $compressor.Dispose() }
         } finally { $outputStream.Dispose() }
     } finally { $inputStream.Dispose() }

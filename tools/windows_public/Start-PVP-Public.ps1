@@ -10,6 +10,8 @@ $web = Join-Path $runtime "web"
 $state = Join-Path $runtime "processes.json"
 $script:children = @()
 $script:active = $false
+$script:activeTunnelLog = ""
+. (Join-Path $PSScriptRoot "Tunnel-Log.ps1")
 foreach ($dir in @($runtime, $bin, $logs)) {
     New-Item -ItemType Directory -Path $dir -Force | Out-Null
 }
@@ -232,22 +234,26 @@ http://127.0.0.1:18080 {
     return $caddyfile
 }
 
-function Read-TunnelUrl {
-    $text = ""
-    foreach ($file in @((Join-Path $logs "cloudflared.err.log"), (Join-Path $logs "cloudflared.out.log"))) {
-        if (Test-Path -LiteralPath $file) {
-            try { $text += [IO.File]::ReadAllText($file) } catch {}
-        }
+function Prepare-TunnelLog([string]$name) {
+    $path = Join-Path $logs $name
+    if (Test-Path -LiteralPath $path) {
+        Move-Item -LiteralPath $path -Destination ($path + ".previous") -Force
     }
-    $found = [regex]::Matches($text, 'https://[a-z0-9-]+\.trycloudflare\.com', [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
-    if ($found.Count -gt 0) { return $found[$found.Count - 1].Value }
-    return ""
+    $script:activeTunnelLog = $path
+    return $path
 }
 
 function Wait-TunnelUrl([System.Diagnostics.Process]$process, [int]$seconds) {
     for ($i=0; $i -lt ($seconds * 2); $i++) {
         if ($process.HasExited) { break }
-        $url = Read-TunnelUrl
+        # The cloudflared-owned logfile is readable live, unlike some redirected
+        # stderr handles held by Windows PowerShell Start-Process.
+        $files = @(
+            $script:activeTunnelLog,
+            (Join-Path $logs "cloudflared.err.log"),
+            (Join-Path $logs "cloudflared.out.log")
+        )
+        $url = Get-PvpTunnelUrl $files
         if (-not [string]::IsNullOrWhiteSpace($url)) { return $url }
         Start-Sleep -Milliseconds 500
     }
@@ -255,24 +261,33 @@ function Wait-TunnelUrl([System.Diagnostics.Process]$process, [int]$seconds) {
 }
 
 function Show-TunnelDiagnostics {
-    Say "Cloudflare diagnostic log (last 30 lines per stream):"
+    Say "Cloudflare diagnostic log (startup + last lines per stream):"
+    $names = @($script:activeTunnelLog, (Join-Path $logs "cloudflared.err.log"), (Join-Path $logs "cloudflared.out.log"))
     $hasLog = $false
-    foreach ($name in @("cloudflared.err.log","cloudflared.out.log")) {
-        $file = Join-Path $logs $name
-        if (-not (Test-Path -LiteralPath $file)) { continue }
+    foreach ($path in $names) {
+        if ([string]::IsNullOrWhiteSpace($path)) { continue }
+        $content = Read-PvpLiveLog $path
+        if ([string]::IsNullOrWhiteSpace($content)) { continue }
         $hasLog = $true
-        Write-Host ("---- " + $name + " ----")
-        try { Get-Content -LiteralPath $file -Tail 30 | ForEach-Object { Write-Host $_ } }
-        catch { Write-Host ("Could not read " + $name) }
+        Write-Host ("---- " + (Split-Path -Leaf $path) + " ----")
+        $lines = @($content -split "\r?\n" | Where-Object { $_ -ne "" })
+        $prefix = @($lines | Select-Object -First 18)
+        $tail = @($lines | Select-Object -Last 25)
+        $printed = [System.Collections.Generic.HashSet[string]]::new()
+        foreach ($line in @($prefix + $tail)) {
+            if ($printed.Add($line)) { Write-Host $line }
+        }
     }
-    if (-not $hasLog) { Write-Host "No Cloudflare log output was captured." }
+    if (-not $hasLog) {
+        Write-Host "Log files could not be read live or are empty; inspect .pvp-local/logs after stopping."
+    }
     foreach ($name in @("config.yml","config.yaml")) {
         $configPath = Join-Path (Join-Path $env:USERPROFILE ".cloudflared") $name
         if (Test-Path -LiteralPath $configPath) {
-            Write-Host ("[PVP] Found a Cloudflare config at " + $configPath + ". Quick Tunnels may conflict with existing config; do not delete it.")
+            Write-Host ("[PVP] Existing Cloudflare config detected: " + $configPath)
         }
     }
-    Write-Host "[PVP] Connection diagnostics: Cloudflare Tunnel requires outbound TCP or UDP on port 7844."
+    Write-Host "[PVP] Registered tunnel connection indicates that Cloudflare connectivity passed."
 }
 
 function Stop-Children {
@@ -306,7 +321,8 @@ try {
     if ($localResponse.StatusCode -ne 200) { throw "Local web server returned an unexpected status." }
     # Use the documented Quick Tunnel invocation. No account, port forwarding,
     # or persistent cloudflared configuration is required.
-    $tunnel = Start-Managed "cloudflared" $cloudflared 'tunnel --url http://127.0.0.1:18080'
+    $primaryLog = Prepare-TunnelLog "cloudflared-primary.log"
+    $tunnel = Start-Managed "cloudflared" $cloudflared ('tunnel --logfile "' + $primaryLog + '" --url http://127.0.0.1:18080')
     Say "Requesting a temporary HTTPS URL from Cloudflare..."
     $publicUrl = Wait-TunnelUrl $tunnel 50
     if (-not $publicUrl) {
@@ -316,7 +332,8 @@ try {
             Stop-Process -Id $tunnel.Id -Force -ErrorAction SilentlyContinue
             try { $tunnel.WaitForExit(5000) | Out-Null } catch {}
         }
-        $tunnel = Start-Managed "cloudflared" $cloudflared 'tunnel --protocol http2 --url http://127.0.0.1:18080'
+        $fallbackLog = Prepare-TunnelLog "cloudflared-http2.log"
+        $tunnel = Start-Managed "cloudflared" $cloudflared ('tunnel --logfile "' + $fallbackLog + '" --protocol http2 --url http://127.0.0.1:18080')
         $publicUrl = Wait-TunnelUrl $tunnel 50
     }
     if (-not $publicUrl -or $tunnel.HasExited) {

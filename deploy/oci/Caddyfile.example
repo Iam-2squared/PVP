@@ -1,0 +1,21 @@
+# Replace this domain with your real DNS hostname. Do not publicly expose port 8910.
+pvp-example.duckdns.org {
+    @battle path /ws
+    handle @battle {
+        reverse_proxy 127.0.0.1:8910
+    }
+
+    handle {
+        root * /srv/pvp/web
+        header {
+            X-Content-Type-Options nosniff
+            Cross-Origin-Opener-Policy same-origin
+            Cross-Origin-Embedder-Policy require-corp
+            Referrer-Policy no-referrer
+        }
+        encode zstd gzip
+        file_server {
+            precompressed gzip
+        }
+    }
+}

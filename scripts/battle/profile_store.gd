@@ -111,9 +111,12 @@ func import_recovery_code(url: String, code: String) -> bool:
 	var existing: Variant = data["identities"].get(url,{})
 	if existing is Dictionary and not str(existing.get("token","")).is_empty():
 		return str(existing.get("player_id",""))==id and str(existing.get("token",""))==token
+	var had_profile: bool = data["profiles"].has(url)
+	var previous_profile: Variant = data["profiles"].get(url,{})
 	data["identities"][url]={"player_id":id,"token":token}
 	data["profiles"].erase(url)
 	if save(): return true
 	if existing is Dictionary and not existing.is_empty(): data["identities"][url]=existing
 	else: data["identities"].erase(url)
+	if had_profile: data["profiles"][url]=previous_profile
 	return false

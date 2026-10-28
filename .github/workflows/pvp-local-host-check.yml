@@ -2,7 +2,7 @@ name: Windows on-demand host checks
 
 on:
   push:
-    branches: [feature/windows-on-demand-public-host, fix/windows-godot-console-import, fix/godot-web-nothreads-templates]
+    branches: [feature/windows-on-demand-public-host, fix/windows-godot-console-import, fix/godot-web-nothreads-templates, fix/windows-tunnel-start-stop-recovery]
   pull_request:
     paths:
       - "Start-PVP-Public.bat"
@@ -30,7 +30,7 @@ jobs:
         shell: powershell
         run: |
           $ErrorActionPreference = "Stop"
-          foreach ($file in @("tools/windows_public/Start-PVP-Public.ps1", "tools/windows_public/Stop-PVP-Public.ps1", "tools/windows_public/Install-WebTemplates.ps1")) {
+          foreach ($file in @("tools/windows_public/Start-PVP-Public.ps1", "tools/windows_public/Stop-PVP-Public.ps1", "tools/windows_public/Install-WebTemplates.ps1", "tools/windows_public/Test-Stop-Processes.ps1")) {
             $tokens = $null
             $errors = $null
             [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $file).Path, [ref]$tokens, [ref]$errors) | Out-Null
@@ -39,6 +39,12 @@ jobs:
               throw "PowerShell parse errors in $file"
             }
           }
+
+      - name: Verify Windows process cleanup and PID safety
+        shell: powershell
+        run: |
+          $ErrorActionPreference = "Stop"
+          & ./tools/windows_public/Test-Stop-Processes.ps1
 
   windows-godot-import:
     runs-on: windows-latest

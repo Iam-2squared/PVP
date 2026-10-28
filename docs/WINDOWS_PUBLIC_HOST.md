@@ -25,6 +25,20 @@ Cloudflareの公開URLで開いた場合、Godotホームの「プレイヤー�
 - サーバー側の profiles.json が削除・破損すると、復帰コードだけでは成長を取り戻せない。
 - 復帰コードの貼り付けは本人が手動で実行する。復帰コードはリンクのクエリやログに載せない。
 
+
+## 2026-10-28: Web export成功後のCloudflare公開URL取得・停止エラー
+
+Windows実機でGodotのWeb書き出し・gzip準備・Caddy設定確認・Godot/Caddy/cloudflared起動は成功したものの、Cloudflareが期限内に公開URLを返さず、旧停止スクリプトで `System.Object[]` の `pid` を整数へ変換できず失敗した記録がある。**公開成功ではない。**
+
+対策:
+- `cloudflared tunnel --url http://127.0.0.1:18080` の公式Quick Tunnel構文を使う。
+- URLが取得できない場合、最初の通信ログを表示してから `--protocol http2` (TCP 7844) でも一度試す。通常は自動でQUIC/HTTP2を選択するが、ネットワーク制限がある場合の切り分けのため。
+- 二度とも失敗した場合は、`.pvp-local/logs/cloudflared.err.log` / `cloudflared.out.log` の末尾をコンソールへ表示。**ログ中にURL、秘密の資格情報などがないか確認してから共有すること。**
+- 停止側は旧形式の多重JSON配列も解釈して、実行パスと開始時刻が一致する追跡プロセスだけを停止。途中で失敗しても保存データを削除しない。
+- 修正版を導入したら、**起動前に `Stop-PVP-Public.bat` を一度実行**して、前回の3プロセスの残留を解消する。ポート8910/18080を開きっぱなしにして再起動しない。
+- `~/.cloudflared/config.yml` / `config.yaml` を使っている場合、Quick Tunnelの動作と衝突するケースがある。自動で削除・改名はせず、画面で案内する。
+- 社内/学校Wi-Fi、Windowsのセキュリティ製品、ルーター、プロバイダがCloudflare宛のTCP/UDP 7844を塞いでいるとQuick Tunnelが接続できない。ログから判断し、必要なら別ネットワークで切り分ける。ポートの外部公開や有料クラウドへの移行は要求しない。
+
 ## 構成
 
     HTTPS: Cloudflare Quick Tunnel（毎回ランダムなホスト）

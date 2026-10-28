@@ -59,6 +59,24 @@ Get-ChildItem "$HOME\PVP\.pvp-local\logs" -Filter "cloudflared-*.log" |
 
 URLがログにあるだけでは、そのURLが今も稼働中とは限らない。必ず起動ウインドウで公開状態を確認し、実際にブラウザーから表示できることを確かめる。
 
+
+## 2026-10-28: 公開URLは発行されたがDNS_PROBE_FINISHED_NXDOMAIN
+
+Windows実機ではCloudflareの接続登録後に `https://...trycloudflare.com` がターミナルへ表示されたものの、Chromeが `DNS_PROBE_FINISHED_NXDOMAIN` と表示した。URLの文字列生成成功は、DNSと外部公開の成功を意味しない。
+
+修正版では公開URLを検出した直後に、そのURLへHTTPS GETを行い**HTMLのHTTP 200応答が返るまでは「PVP IS PUBLIC」と表示しない**。失敗時は自動ブラウザー起動・URL共有を行わず、DNS確認結果を表示する。ターミナルで R を入力すれば同じURLを再検証でき、Enterでサーバーを停止できる。
+
+Windowsの別PowerShellからの診断（実際の公開URLに書き換えること）:
+
+```powershell
+Resolve-DnsName "EXAMPLE.trycloudflare.com" -Server 1.1.1.1 -Type A
+Resolve-DnsName "EXAMPLE.trycloudflare.com" -Server 8.8.8.8 -Type A
+```
+
+公開DNSにIPがあり、PCのブラウザだけNXDOMAINの場合は `ipconfig /flushdns` を別PowerShellで実行して再読込する。公開DNSも解決できなければ、今のQuick Tunnel名は利用できない可能性があるので一度停止し、新しいランダムURLで再起動する。
+
+**Cloudflare側のDNSレコードは利用者が管理していない**ため、通常のドメインと同じDNSレコード追加操作は不要。クイックトンネルは無料の試験用途であり、完全な稼働保証はない。
+
 ## 構成
 
     HTTPS: Cloudflare Quick Tunnel（毎回ランダムなホスト）

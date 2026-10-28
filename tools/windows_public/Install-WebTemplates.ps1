@@ -25,7 +25,7 @@ function Find-MissingTemplates {
             $missing += $name
         }
     }
-    return ,$missing
+    return $missing
 }
 
 New-Item -ItemType Directory -Path $TemplateDir -Force | Out-Null

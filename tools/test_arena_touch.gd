@@ -105,6 +105,21 @@ func _run()->void:
 	_check(_aim()!=aim,"Camera stopped after movement finger release")
 	_touch(19,_right(),false)
 	_check(player._look_touch==-1,"Camera release did not clear its owner")
+	# Browser drag.relative may be measured from the other finger. Derive the
+	# camera delta from this owned finger's absolute positions in either ID order.
+	for ids in [[2,1],[1,2]]:
+		_reset()
+		var look_id:int=ids[0]
+		var move_id:int=ids[1]
+		var look_start:=Vector2(1000,310)
+		_touch(look_id,look_start,true)
+		_touch(move_id,_stick(),true)
+		_drag(move_id,_stick()+Vector2(0,-51),Vector2(0,-51))
+		var look_end:=look_start+Vector2(20,0)
+		var other_finger_relative:=look_end-(_stick()+Vector2(0,-51))
+		_drag(look_id,look_end,other_finger_relative)
+		_check(_aim().is_equal_approx(Vector2(-20,0)*Player.TOUCH_SENSITIVITY),"Browser mixed another finger into camera delta for IDs "+str(ids))
+		_check(player.hud.get_move_vector().length()>0.1 and player._look_touch==look_id,"Browser-relative correction changed touch ownership")
 	# The reverse order and unrelated IDs behave the same; no held finger takeover.
 	_reset()
 	_touch(2,_right(),true)

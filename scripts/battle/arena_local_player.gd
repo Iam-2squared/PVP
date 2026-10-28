@@ -126,7 +126,8 @@ func _input(event:InputEvent)->void:
 		# Keep the same finger across the center, but never apply a left-half
 		# delta or the first crossing delta when it returns to the right.
 		if event.position.x>=_look_split_x and _look_last_position.x>=_look_split_x:
-			_rotate_look(event.relative,TOUCH_SENSITIVITY)
+			# Web's relative can include another finger's last position.
+			_rotate_look(event.position-_look_last_position,TOUCH_SENSITIVITY)
 		_look_last_position=event.position
 		get_viewport().set_input_as_handled()
 	elif event is InputEventScreenTouch and event.index==_look_touch and (not event.pressed or event.canceled):

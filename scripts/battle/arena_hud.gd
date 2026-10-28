@@ -3,23 +3,31 @@ extends "res://scripts/battle/arena_controls_base.gd"
 signal home_requested
 var profile: Dictionary={}
 var players_count:=0
-var connection_text:="接続中…"
-var alive:=false
+var connection_text:="接続中…":
+	set(value):
+		if connection_text==value:return
+		connection_text=value
+		_request_redraw()
+var alive:=false:
+	set(value):
+		if alive==value:return
+		alive=value
+		_request_redraw()
 var protected_spawn:=false
 var max_hp:=100.0
 var max_mp:=100.0
+const SKILL_NAMES:Dictionary={"warrior":"強撃","mage":"火炎爆発","scout":"急所突き","archer":"貫通矢","cleric":"ヒール","artisan":"投擲爆弾"}
 
 func _ready()->void:
 	super._ready()
 	_font=load("res://assets/frontend/ui.otf")
 	_canvas.name="ArenaControls"
 
-func _control_rects()->Dictionary:
-	var rects:Dictionary=super._control_rects()
+func _build_control_rects(view:Vector2,s:float)->Dictionary:
+	var rects:Dictionary=super._build_control_rects(view,s)
 	rects.erase("equipment")
 	rects.erase("selection")
-	var s:=_layout_scale()
-	rects["home"]=Rect2(Vector2(_viewport_size().x-165*s,22*s),Vector2(137,46)*s)
+	rects["home"]=Rect2(Vector2(view.x-165*s,22*s),Vector2(137,46)*s)
 	return rects
 
 func _emit_tap(owner:String)->void:
@@ -29,20 +37,32 @@ func _emit_tap(owner:String)->void:
 func get_move_vector()->Vector2:
 	return move_vector
 
+func _feedback_fades()->bool:
+	return false
+
 func set_profile(value:Dictionary)->void:
+	if profile==value:return
 	profile=value.duplicate(true)
-	var names:Dictionary={"warrior":"強撃","mage":"火炎爆発","scout":"急所突き","archer":"貫通矢","cleric":"ヒール","artisan":"投擲爆弾"}
-	_skill_name=str(names.get(str(profile.get("job_id","warrior")),"強撃"))
+	_skill_name=str(SKILL_NAMES.get(str(profile.get("job_id","warrior")),"強撃"))
+	_request_redraw()
 
 func set_battle_status(data:Dictionary,count:int)->void:
+	var next_alive:=bool(data.get("alive",false))
+	var next_protected:=bool(data.get("spawn_protected",false))
+	var next_max_hp:=maxf(1,float(data.get("max_hp",100)))
+	var next_max_mp:=maxf(1,float(data.get("max_mp",100)))
+	var next_hp:=float(data.get("hp",0))
+	var next_mp:=float(data.get("mp",0))
+	if players_count==count and alive==next_alive and protected_spawn==next_protected and max_hp==next_max_hp and max_mp==next_max_mp and _hp==next_hp and _mp==next_mp and connection_text.is_empty():return
 	players_count=count
-	alive=bool(data.get("alive",false))
-	protected_spawn=bool(data.get("spawn_protected",false))
-	max_hp=maxf(1,float(data.get("max_hp",100)))
-	max_mp=maxf(1,float(data.get("max_mp",100)))
-	_hp=float(data.get("hp",0))
-	_mp=float(data.get("mp",0))
+	alive=next_alive
+	protected_spawn=next_protected
+	max_hp=next_max_hp
+	max_mp=next_max_mp
+	_hp=next_hp
+	_mp=next_mp
 	connection_text=""
+	_request_redraw()
 
 func _draw_hud(canvas:Control)->void:
 	var view:=_viewport_size()

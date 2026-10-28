@@ -1,0 +1,221 @@
+{
+  "client_web_export_excludes": "generated/server_kingdom.scn",
+  "dedicated_server": {
+    "collision_sha256": "ef7d7a81e4fffa39dd813111b99b0a6036f1cb9b45b99cf967794bc018468e77",
+    "concave_triangles": 1132220,
+    "meshes": 0,
+    "nodes": 840,
+    "render_triangles": 0,
+    "shapes": 273,
+    "shared_data_sha256": "45531c35917ead5735c1bca6039a9af2ec9eb9b1bab4dbe2f176f59f50c3c688",
+    "static_bodies": 273,
+    "visuals": 0
+  },
+  "generation_command": "godot --headless --path . --script res://tools/bake_server_world.gd",
+  "limitations": "Removing server drawing resources saves server memory; it does not measure or promise smartphone rendering speed. Collision topology and 60 Hz physics are unchanged.",
+  "output_scene_bytes": 5718474,
+  "runtime_gates": {
+    "client_shapes": 4,
+    "collision_sha256": "3be326cafcbfd6244e9da55a56359406aa8f7c7bd67e0757d3581f37255edbd9",
+    "exact_collision_match": true,
+    "server_shapes": 4
+  },
+  "schema_version": 1,
+  "scope": "Dedicated server only. Client city, all visual objects, materials and collision geometry are preserved.",
+  "source": {
+    "collision_sha256": "ef7d7a81e4fffa39dd813111b99b0a6036f1cb9b45b99cf967794bc018468e77",
+    "concave_triangles": 1132220,
+    "meshes": 389,
+    "nodes": 1229,
+    "render_triangles": 1690984,
+    "shapes": 273,
+    "shared_data_sha256": "45531c35917ead5735c1bca6039a9af2ec9eb9b1bab4dbe2f176f59f50c3c688",
+    "static_bodies": 273,
+    "visuals": 389
+  },
+  "source_files_sha256": {
+    "res://generated/kingdom.scn": "84de8db446e090a6f43f21f7cef588cbcd85a7ac4fc515c79148a40830bdcb19",
+    "res://generated/parts/component_district_ground_surfaces.scn": "abbcc32fe3233aaf655a787376c69462dc1c68d47eaf0d335aa353c2e78b7be6",
+    "res://generated/parts/component_fortifications.scn": "13de6ecdc31580c7ee792f8bdc7fc7fbcb9301b4d41b79e9f6a005d6337af7b6",
+    "res://generated/parts/component_level_kingdom_ground.scn": "effd8b7274d597806f6b9705ecc07d26bd7c2d23706f369ed81020a589385a80",
+    "res://generated/parts/component_palace_interior_0.scn": "fb404958339a63d47f73a01347bf4fd185b88160afc2789cb915324c319c07fd",
+    "res://generated/parts/component_palace_interior_1.scn": "20b1395a98e37ffbbef5a5aee1f0f11ac53f2155621d65ece41bc8678f512cd8",
+    "res://generated/parts/component_palace_interior_2.scn": "e11566ce37c79093feae486ac49e881b8cba9687bd2a89e8d537c561e6d2e26c",
+    "res://generated/parts/component_palace_interior_3.scn": "f45e96057cd7f839774d0996eaf2cbaa6e8a13ef55a470dfb2020feae585a3cb",
+    "res://generated/parts/component_palace_interior_4.scn": "ea9fba61a772c2d9a38c63feed0ab66a9ad73503b161776ce30f1ae7a389260f",
+    "res://generated/parts/component_palace_interior_5.scn": "86866bd7b240cb04bf392c3356010b5b056bcb37fdc66d234c64a52a253f169b",
+    "res://generated/parts/component_palace_interior_details_15.scn": "613ff6235506c84d5aa73637f2e2e502a40d7c427a924f57caf8853f339c46a1",
+    "res://generated/parts/component_palace_interior_details_21.scn": "19b73220a9273bb1c0be32ead232e90e6e8a01d6339e6430de1510a31fa17193",
+    "res://generated/parts/component_palace_interior_details_27.scn": "db843f6b0303c080ff5da9a87eaa1f550b5d453bdbe02a92ab2fa9061f81e2c8",
+    "res://generated/parts/component_palace_interior_details_33.scn": "0f2a6a0b203a8d40b5f609913bdae32077172d66fe4c81914a00e1e21d4d1ab1",
+    "res://generated/parts/component_palace_interior_details_39.scn": "6be76f34550e3cd491032763bb3d020deaf67828752352942064a88ad1645634",
+    "res://generated/parts/component_royal_palace_exterior.scn": "0c6a0e98b917d8aa9c652d141fc7c704a20f5f5e1f6acedeb0277afb504e8d77",
+    "res://generated/parts/component_town_district_north_east.scn": "87f972db865bce9fac88f7565de37bca4a771d61f1b3b04d799abf67cfcd6f14",
+    "res://generated/parts/component_town_district_north_west.scn": "02e5df249689ab4b4a41704c03ea33ff384677a68ac6a21d3086a6ee9ffcb5be",
+    "res://generated/parts/component_town_district_south_east.scn": "048fa953595a4d146d22c4578fd5becc00c621d46a787895e8a1610f149642e2",
+    "res://generated/parts/component_town_district_south_west.scn": "ee4a56c6bc6386818173d878dada6b137f714f413d55b25b434847a28b5c9cca",
+    "res://generated/parts/component_town_micro_details.scn": "d0fd52cc33eeaa56a6832adec36e9f4a54e13df4e244d1ef3f9db601cf19c073"
+  },
+  "verification_command": "godot --headless --path . --script res://tools/bake_server_world.gd -- --verify-only",
+  "headless_memory_measurement": {
+    "measured_at_utc": "2026-10-28T03:33:22.668902+00:00",
+    "platform": "Linux x86_64",
+    "method": "Two sequential, independent headless Godot processes after final Web export. One scene per process; Godot-managed allocations sampled after 30 physics frames. Filesystem may be warm. Excludes GPU allocations and is not OS resident-set memory or a controlled load-time benchmark.",
+    "commands": [
+      "XDG_DATA_HOME=/tmp/pvp-final-memory-source godot --headless --path . --script res://tools/bake_server_world.gd -- --profile-scene=source",
+      "XDG_DATA_HOME=/tmp/pvp-final-memory-server godot --headless --path . --script res://tools/bake_server_world.gd -- --profile-scene=server"
+    ],
+    "source_files_sha256_match_report": true,
+    "server_scene_sha256": "5044ee54d842480fb1be75ac04e7b0ea5e1d681371b3ceb18f84e2c92fc59cf3",
+    "source": {
+      "display_server": "headless",
+      "godot_version": "4.6.3-stable (official)",
+      "load_and_instantiate_ms": 1773.845,
+      "managed_memory_baseline_bytes": 21865739,
+      "managed_memory_delta_bytes": 270788837,
+      "managed_memory_loaded_bytes": 292654576,
+      "node_count": 1230,
+      "resource_count": 710,
+      "scene": "source",
+      "scope": "Single Linux headless process, filesystem may be warm; no smartphone or GPU performance claim."
+    },
+    "dedicated_server": {
+      "display_server": "headless",
+      "godot_version": "4.6.3-stable (official)",
+      "load_and_instantiate_ms": 1645.908,
+      "managed_memory_baseline_bytes": 21865739,
+      "managed_memory_delta_bytes": 198995941,
+      "managed_memory_loaded_bytes": 220861680,
+      "node_count": 841,
+      "resource_count": 276,
+      "scene": "server",
+      "scope": "Single Linux headless process, filesystem may be warm; no smartphone or GPU performance claim."
+    },
+    "managed_memory_reduction_bytes": 71792896,
+    "managed_memory_reduction_mib": 68.47,
+    "smartphone_rendering_benchmark": false
+  },
+  "native_regression_results": {
+    "total_checks": 590,
+    "failed_checks": 0,
+    "skipped_checks": 0,
+    "suites": {
+      "progression": {
+        "checks": 56,
+        "result": {
+          "checks": 56,
+          "failures": []
+        },
+        "log": "/tmp/pvp-final-progression.log",
+        "exit_code": 0,
+        "display": "headless",
+        "user_data_directory": "/tmp/pvp-final-progression"
+      },
+      "frontend_battle": {
+        "checks": 45,
+        "result": {
+          "checks": 45,
+          "failures": []
+        },
+        "log": "/tmp/pvp-final-frontend_battle.log",
+        "exit_code": 0,
+        "display": "headless",
+        "user_data_directory": "/tmp/pvp-final-frontend_battle"
+      },
+      "frontend": {
+        "checks": 281,
+        "result": {
+          "failed": 0,
+          "passed": 281
+        },
+        "log": "/tmp/pvp-final-frontend.log",
+        "exit_code": 0,
+        "display": "headless",
+        "user_data_directory": "/tmp/pvp-final-frontend"
+      },
+      "battle_server": {
+        "checks": 66,
+        "result": {
+          "checks": 66,
+          "failures": [],
+          "persistent_restart_checked": true,
+          "two_real_websocket_users": true
+        },
+        "log": "/tmp/pvp-final-battle_server.log",
+        "exit_code": 0,
+        "display": "headless",
+        "user_data_directory": "/tmp/pvp-final-battle_server"
+      },
+      "battle_combat": {
+        "checks": 32,
+        "result": {
+          "checks": 32,
+          "failures": [],
+          "real_network_classes": [
+            "warrior",
+            "mage",
+            "archer",
+            "cleric",
+            "scout",
+            "artisan"
+          ]
+        },
+        "log": "/tmp/pvp-final-battle_combat.log",
+        "exit_code": 0,
+        "display": "headless",
+        "user_data_directory": "/tmp/pvp-final-battle_combat"
+      },
+      "battle_flow": {
+        "checks": 40,
+        "result": {
+          "actual_frontend_client_server": true,
+          "checks": 40,
+          "failures": []
+        },
+        "log": "/tmp/pvp-final-battle_flow.log",
+        "exit_code": 0,
+        "display": "headless",
+        "user_data_directory": "/tmp/pvp-final-battle_flow"
+      },
+      "arena_input": {
+        "checks": 6,
+        "result": {
+          "button_presses": 1,
+          "checks": 6,
+          "failures": [],
+          "jumps": 2,
+          "position": "(1063.0, 647.0)"
+        },
+        "log": "/tmp/pvp-final-arena_input.log",
+        "exit_code": 0,
+        "display": "headless",
+        "user_data_directory": "/tmp/pvp-final-arena_input"
+      },
+      "touch": {
+        "checks": 64,
+        "result": {
+          "checks": 64,
+          "failures": [],
+          "native_input_events": true,
+          "skipped": []
+        },
+        "log": "/tmp/pvp-final-touch.log",
+        "exit_code": 0,
+        "display": "X11 :105, llvmpipe",
+        "user_data_directory": "/tmp/pvp-final-touch"
+      }
+    },
+    "exact_saved_scene_and_runtime_gates": {
+      "concave_triangles": 1132220,
+      "exact_collision_match": true,
+      "exact_shared_data_match": true,
+      "failures": [],
+      "runtime_gates_match": true,
+      "server_visuals": 0,
+      "shapes": 273
+    },
+    "collision_verification_log": "/tmp/pvp-final-server-world-verify.log",
+    "clock": "Real wall clock; --fixed-fps was not used.",
+    "touch_scope": "The touch suite used the native X11 window so the last three mouse-capture checks were executed, with no skipped checks."
+  }
+}

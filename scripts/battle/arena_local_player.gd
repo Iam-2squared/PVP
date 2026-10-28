@@ -15,6 +15,11 @@ var _network_jump:=false
 var _server_position:=Vector3(0,2.15,150)
 var _last_authoritative_alive:=false
 var _last_spawn_serial:=-1
+var _weapon_swinging:=false
+var _presentation_visible:=true
+var _camera_height:=1.65
+var _look_split_x:=0.0
+var _look_last_position:=Vector2.ZERO
 
 func _ready()->void:
 	floor_snap_length=0.35
@@ -34,6 +39,8 @@ func _ready()->void:
 	hud.skill_tapped.connect(_skill_tap)
 	hud.jump_requested.connect(_queue_jump)
 	hud.home_requested.connect(func():home_requested.emit())
+	_reset_touch_layout()
+	get_viewport().size_changed.connect(_reset_touch_layout)
 	Input.emulate_mouse_from_touch=false
 	Input.mouse_mode=Input.MOUSE_MODE_VISIBLE
 
@@ -44,6 +51,7 @@ func _create_weapon()->void:
 	_weapon=Figure.create_weapon(job_id)
 	_weapon.position=_weapon_rest_position
 	_weapon.rotation_degrees=Vector3(-18,-8,-24)
+	_weapon_swinging=false
 	camera.add_child(_weapon)
 
 func configure_profile(profile:Dictionary)->void:
@@ -77,8 +85,13 @@ func cancel_input()->void:
 	_network_jump=false
 	_jump_queued=false
 	_look_touch=-1
+	_look_last_position=Vector2.ZERO
 	velocity=Vector3.ZERO
 	if is_instance_valid(hud):hud.reset_input()
+
+func _reset_touch_layout()->void:
+	_look_split_x=get_viewport().get_visible_rect().size.x*0.5
+	cancel_input()
 
 func _queue_jump()->void:
 	if active:
@@ -96,11 +109,30 @@ func _unhandled_key_input(event:InputEvent)->void:
 
 func _unhandled_input(event:InputEvent)->void:
 	if not active:return
+	if event is InputEventScreenTouch:
+		# Ownership starts only on a fresh press in the right half, outside UI.
+		if event.pressed and not event.canceled and _look_touch==-1 and event.position.x>=_look_split_x and not hud.is_ui_position(event.position):
+			_look_touch=event.index
+			_look_last_position=event.position
+			get_viewport().set_input_as_handled()
+		return
+	if event is InputEventScreenDrag:return
+	# Keep real mouse capture/attack and the emulated-device filter unchanged.
 	super._unhandled_input(event)
 
 func _input(event:InputEvent)->void:
 	if not active:return
-	super._input(event)
+	if event is InputEventScreenDrag and event.index==_look_touch:
+		# Keep the same finger across the center, but never apply a left-half
+		# delta or the first crossing delta when it returns to the right.
+		if event.position.x>=_look_split_x and _look_last_position.x>=_look_split_x:
+			_rotate_look(event.relative,TOUCH_SENSITIVITY)
+		_look_last_position=event.position
+		get_viewport().set_input_as_handled()
+	elif event is InputEventScreenTouch and event.index==_look_touch and (not event.pressed or event.canceled):
+		_look_touch=-1
+		_look_last_position=Vector2.ZERO
+		get_viewport().set_input_as_handled()
 
 func _notification(what:int)->void:
 	super._notification(what)
@@ -124,6 +156,31 @@ func _send_attack(strong:bool,skill:bool)->void:
 	_attack_strength=1.2 if strong or skill else 1.0
 	_attack_time=0.32
 	attack_requested.emit(strong,skill)
+
+func _process(delta:float)->void:
+	_step_visual_offset=move_toward(_step_visual_offset,0.0,delta*4.0)
+	if not _presentation_visible:
+		# Timers still elapse at Home; transforms catch up when visible again.
+		if _attack_time>0:
+			_attack_time=maxf(0.0,_attack_time-delta)
+			_weapon_swinging=true
+		return
+	var height:=1.65+_step_visual_offset
+	if _camera_height!=height and camera!=null:
+		_camera_height=height
+		camera.position.y=height
+	if _weapon==null:return
+	if _attack_time>0:
+		_attack_time=maxf(0.0,_attack_time-delta)
+		var phase:=1.0-_attack_time/0.32
+		var swing:=sin(phase*PI)*_attack_strength
+		_weapon.position=_weapon_rest_position+Vector3(-0.33,0.06,0.07)*swing
+		_weapon.rotation_degrees=Vector3(-18+70*swing,-8,-24+80*swing)
+		_weapon_swinging=true
+	elif _weapon_swinging:
+		_weapon.position=_weapon_rest_position
+		_weapon.rotation_degrees=Vector3(-18,-8,-24)
+		_weapon_swinging=false
 
 func _physics_process(delta:float)->void:
 	if not active:return

@@ -30,6 +30,12 @@ var _projectiles:Array[Dictionary]=[]
 var _snapshot_ack_pending:=false
 var _pending_snapshot_seq:=-1
 var _connection_generation:=0
+var _snapshot_generation:=0
+var _stale_actor_ids:Array[String]=[]
+var _arrow_mesh:BoxMesh
+var _orb_mesh:SphereMesh
+var _arrow_material:StandardMaterial3D
+var _orb_material:StandardMaterial3D
 
 func start_connection(url:String,new_identity:Dictionary)->void:
 	if _socket!=null:_socket.close()
@@ -207,6 +213,7 @@ func _show_battle()->void:
 	Input.emulate_mouse_from_touch=false
 	visible=true
 	world.visible=true
+	player._presentation_visible=true
 	player.camera.current=true
 	player.prepare_spawn()
 	player.configure_profile(profile)
@@ -219,7 +226,9 @@ func _hide_battle()->void:
 	Input.emulate_mouse_from_touch=true
 	visible=false
 	if world!=null:world.visible=false
-	if player!=null:player.set_active(false)
+	if player!=null:
+		player._presentation_visible=false
+		player.set_active(false)
 	Input.mouse_mode=Input.MOUSE_MODE_VISIBLE
 
 func _ensure_world()->void:
@@ -248,11 +257,10 @@ func _apply_snapshot(message:Dictionary)->void:
 	if message.has("profile"):_apply_profile(message["profile"])
 	if _in_home:return
 	_ensure_world()
-	var seen:Dictionary={}
+	_snapshot_generation+=1
 	var players:Array=message.get("players",[])
 	for data:Dictionary in players:
 		var id:=str(data.get("id",""))
-		seen[id]=true
 		if id==_my_id:
 			player.reconcile(data)
 			if _requesting_home:player.set_active(false);player.hud.visible=true
@@ -264,11 +272,15 @@ func _apply_snapshot(message:Dictionary)->void:
 				actor.player_id=id
 				add_child(actor)
 				_actors[id]=actor
-			_actors[id].apply_snapshot(data)
-	for id in _actors.keys():
-		if not seen.has(id):
-			_actors[id].queue_free()
-			_actors.erase(id)
+			var actor:Node3D=_actors[id]
+			actor.snapshot_generation=_snapshot_generation
+			actor.apply_snapshot(data)
+	_stale_actor_ids.clear()
+	for id:String in _actors:
+		if _actors[id].snapshot_generation!=_snapshot_generation:_stale_actor_ids.append(id)
+	for id in _stale_actor_ids:
+		_actors[id].queue_free()
+		_actors.erase(id)
 	for event in message.get("events",[]):
 		if event is Dictionary:_apply_event(event)
 
@@ -338,29 +350,35 @@ func _show_shot(event:Dictionary)->void:
 	if not hit.is_empty():reach=from.distance_to(hit.position)
 	var visual:=MeshInstance3D.new()
 	var job:=str(event.get("job_id","mage"))
-	var material:=StandardMaterial3D.new()
-	material.albedo_color=Color("e3c78e") if job=="archer" else Color("f7b45d")
-	material.emission_enabled=job!="archer"
-	material.emission=material.albedo_color
-	material.emission_energy_multiplier=0.7
-	material.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED
-	if job=="archer":
-		var arrow:=BoxMesh.new()
-		arrow.size=Vector3(0.035,0.035,0.65)
-		visual.mesh=arrow
-	else:
-		var ball:=SphereMesh.new()
-		ball.radius=0.13
-		ball.height=0.26
-		ball.radial_segments=8
-		ball.rings=4
-		visual.mesh=ball
-	visual.material_override=material
+	_ensure_shot_resources()
+	visual.mesh=_arrow_mesh if job=="archer" else _orb_mesh
+	visual.material_override=_arrow_material if job=="archer" else _orb_material
 	visual.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(visual)
 	visual.position=from
 	if absf(forward.dot(Vector3.UP))<0.995:visual.look_at(from+forward,Vector3.UP)
 	_projectiles.append({"node":visual,"direction":forward,"remaining":reach,"life":1.2})
+
+func _ensure_shot_resources()->void:
+	if _arrow_mesh!=null:return
+	_arrow_mesh=BoxMesh.new()
+	_arrow_mesh.size=Vector3(0.035,0.035,0.65)
+	_orb_mesh=SphereMesh.new()
+	_orb_mesh.radius=0.13
+	_orb_mesh.height=0.26
+	_orb_mesh.radial_segments=8
+	_orb_mesh.rings=4
+	_arrow_material=StandardMaterial3D.new()
+	_arrow_material.albedo_color=Color("e3c78e")
+	_arrow_material.emission=_arrow_material.albedo_color
+	_arrow_material.emission_energy_multiplier=0.7
+	_arrow_material.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED
+	_orb_material=StandardMaterial3D.new()
+	_orb_material.albedo_color=Color("f7b45d")
+	_orb_material.emission_enabled=true
+	_orb_material.emission=_orb_material.albedo_color
+	_orb_material.emission_energy_multiplier=0.7
+	_orb_material.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED
 
 func _update_shots(delta:float)->void:
 	for index in range(_projectiles.size()-1,-1,-1):

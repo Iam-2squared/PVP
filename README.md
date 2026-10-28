@@ -22,6 +22,8 @@ godot --headless --path . --script res://tools/run_battle_server.gd -- --port=89
 
 操作・サーバーの起動・Web版・保存データ・検証は [対戦と成長の説明](docs/battle.md) を参照してください。ホームの表示と12体のモデルは [ホームUIの説明](docs/frontend.md)、独立した練習用プロジェクトは [character_playground](character_playground/README.md) にあります。
 
+見た目と物の配置を保つ最適化の内容と計測条件は、[性能改善の記録](docs/performance.md) にまとめています。
+
 ![ホームと8能力の配分画面](docs/battle-home.png)
 
 ![王都の対戦画面](docs/battle-arena.png)

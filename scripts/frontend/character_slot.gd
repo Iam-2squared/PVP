@@ -10,12 +10,15 @@ var accent := Color("c7ac73")
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	resized.connect(queue_redraw)
+	visibility_changed.connect(_sync_preview_processing)
+	_sync_preview_processing()
 
 
 func display_scene(scene: PackedScene, show_weapon: bool = true) -> void:
 	for child in get_children():
 		remove_child(child)
 		child.queue_free()
+	_viewport = null
 	_placeholder = scene == null
 	if scene != null:
 		var container := SubViewportContainer.new()
@@ -57,7 +60,15 @@ func display_scene(scene: PackedScene, show_weapon: bool = true) -> void:
 		environment.environment.ambient_light_color = Color("d4deed")
 		environment.environment.ambient_light_energy = 0.7
 		stage.add_child(environment)
+	_sync_preview_processing()
 	queue_redraw()
+
+
+func _sync_preview_processing() -> void:
+	# The container already stops drawing its hidden viewport. Its Node3D
+	# children still process unless explicitly paused, even while Home is hidden.
+	if is_instance_valid(_viewport):
+		_viewport.process_mode = Node.PROCESS_MODE_INHERIT if is_visible_in_tree() else Node.PROCESS_MODE_DISABLED
 
 
 func _draw() -> void:

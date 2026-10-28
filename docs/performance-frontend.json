@@ -1,0 +1,48 @@
+{
+  "changed_source": [
+    "scripts/frontend/character_slot.gd"
+  ],
+  "change": "Pause inherited processing below a CharacterSlot SubViewport while its Control is hidden; resume when visible.",
+  "renderer": "Native Godot Compatibility with Mesa llvmpipe; diagnostic measurements, not a device FPS benchmark.",
+  "before": "Hidden Home and six hidden job previews continue animation/process callbacks, although their viewports already stop GPU drawing.",
+  "after": "Hidden animation clocks remain exactly zero across 60 engine process frames; all visible previews resume updates after showing again.",
+  "graphics_changed": false,
+  "visual_comparison": {
+    "home": {
+      "resolution": [
+        1280,
+        720
+      ],
+      "rgba_bytes_identical": true,
+      "rgb_difference_bounds": null,
+      "sha256_before": "91d8f3f940b0ed688bda7341e377ad7b3cf6126e2e2118514bea003f58db2bbe",
+      "sha256_after": "91d8f3f940b0ed688bda7341e377ad7b3cf6126e2e2118514bea003f58db2bbe"
+    },
+    "tree-male": {
+      "resolution": [
+        1280,
+        720
+      ],
+      "rgba_bytes_identical": true,
+      "rgb_difference_bounds": null,
+      "sha256_before": "83e02e3dcb1c3ac7321a27052e861ec1eb22a198bc4f564531a44c40b6475f2b",
+      "sha256_after": "83e02e3dcb1c3ac7321a27052e861ec1eb22a198bc4f564531a44c40b6475f2b"
+    },
+    "tree-female": {
+      "resolution": [
+        1280,
+        720
+      ],
+      "rgba_bytes_identical": true,
+      "rgb_difference_bounds": null,
+      "sha256_before": "f157c606ed75d9c6ef4f5de96954d354eecd173b33f5f252368c5154f76047ba",
+      "sha256_after": "f157c606ed75d9c6ef4f5de96954d354eecd173b33f5f252368c5154f76047ba"
+    }
+  },
+  "frontend_tests_passed": 281,
+  "frontend_battle_tests_passed": 45,
+  "limitation": "Removes small background CPU work. Hidden viewport GPU draw calls were already zero before the change; this is not a claim of a major overall frame-rate improvement.",
+  "schema_version": 1,
+  "scope": "Hidden Home and job-preview CPU processing only; visible model geometry, materials and rendering settings are preserved.",
+  "smartphone_rendering_benchmark": false
+}

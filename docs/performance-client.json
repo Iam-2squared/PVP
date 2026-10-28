@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "scope": "Client presentation CPU work only. Geometry, material, display resolution and authoritative gameplay rules are preserved.",
+  "measurement": {
+    "engine": "Godot 4.6.3 stable official",
+    "platform": "Linux x86_64",
+    "display": "headless",
+    "method": "Wall-clock microsecond totals for repeated function calls in one scene, three timed passes after one warm-up pass. These are microbenchmarks, not frame rates or whole-game CPU/GPU times.",
+    "iterations": {
+      "layout_us": 100000,
+      "hud_idle_process_us": 50000,
+      "hud_same_status_us": 10000,
+      "actor_same_snapshot_us": 10000,
+      "player_idle_process_us": 50000
+    },
+    "before_us": [
+      {
+        "actor_same_snapshot_us": 17777,
+        "hud_idle_process_us": 6641,
+        "hud_same_status_us": 6995,
+        "layout_us": 206110,
+        "player_idle_process_us": 17450
+      },
+      {
+        "actor_same_snapshot_us": 16843,
+        "hud_idle_process_us": 6836,
+        "hud_same_status_us": 6465,
+        "layout_us": 205643,
+        "player_idle_process_us": 16387
+      },
+      {
+        "actor_same_snapshot_us": 16230,
+        "hud_idle_process_us": 6283,
+        "hud_same_status_us": 7111,
+        "layout_us": 198250,
+        "player_idle_process_us": 19267
+      }
+    ],
+    "after_us": [
+      {
+        "actor_same_snapshot_us": 15929,
+        "hud_idle_process_us": 7365,
+        "hud_same_status_us": 9780,
+        "layout_us": 11485,
+        "player_idle_process_us": 10425
+      },
+      {
+        "actor_same_snapshot_us": 17349,
+        "hud_idle_process_us": 7401,
+        "hud_same_status_us": 8228,
+        "layout_us": 12113,
+        "player_idle_process_us": 10738
+      },
+      {
+        "actor_same_snapshot_us": 16750,
+        "hud_idle_process_us": 8869,
+        "hud_same_status_us": 9123,
+        "layout_us": 13604,
+        "player_idle_process_us": 11302
+      }
+    ],
+    "median_before_us": {
+      "actor_same_snapshot_us": 16843,
+      "hud_idle_process_us": 6641,
+      "hud_same_status_us": 6995,
+      "layout_us": 205643,
+      "player_idle_process_us": 17450
+    },
+    "median_after_us": {
+      "actor_same_snapshot_us": 16750,
+      "hud_idle_process_us": 7401,
+      "hud_same_status_us": 9123,
+      "layout_us": 12113,
+      "player_idle_process_us": 10738
+    },
+    "limitations": "Measurements ran in a shared development environment. Some isolated paths are unchanged or slower; these totals do not establish a whole-game speedup or a smartphone frame rate."
+  },
+  "changes": [
+    "Redraw the battle HUD only when its displayed state, input feedback or layout changes.",
+    "Cache viewport-dependent input rectangles and panel style; refresh the cache on viewport resize.",
+    "Reuse arrow/orb meshes and materials across shot visuals, keeping the same geometry and material values.",
+    "Avoid repeated idle weapon/camera transforms and unchanged remote-player label assignments.",
+    "Reuse snapshot-generation tracking and stale-player lists instead of rebuilding per-snapshot collections."
+  ],
+  "regressions": {
+    "presentation_before_after": {
+      "checks": 244,
+      "failures": [],
+      "scope": [
+        "HUD dirty-state and feedback expiry",
+        "Input-region equality at 800x450, 1280x720 and 1920x1080",
+        "Weapon/camera transforms over normal and strong attacks",
+        "Remote-player transforms, animation poses and labels",
+        "Shared projectile-resource dimensions and reuse"
+      ],
+      "comparison": "Transforms use the same approximate-equality tolerance as the regression script; remote figure poses and input rectangles compare equal. This is not an RGBA pixel comparison."
+    },
+    "home_integration": {
+      "checks": 45,
+      "failures": []
+    },
+    "actual_home_client_server_flow": {
+      "checks": 40,
+      "failures": []
+    },
+    "hidden_hud_input": {
+      "checks": 6,
+      "failures": []
+    },
+    "right_half_touch": {
+      "method": "Actual viewport.push_input ScreenTouch and ScreenDrag events, with fixed finger ownership and simultaneous movement/look input.",
+      "window": {
+        "checks": 64,
+        "failures": [],
+        "skipped": [],
+        "native_input_events": true,
+        "renderer": "Mesa llvmpipe, Godot Compatibility, X11"
+      },
+      "headless": {
+        "checks": 61,
+        "failures": [],
+        "native_input_events": true,
+        "skipped": [
+          "Window required: real mouse capture",
+          "Window required: captured mouse camera",
+          "Window required: captured mouse attack"
+        ]
+      },
+      "scope": [
+        "Right-half non-button press owns the look finger",
+        "Separate ownership for move, attack, jump, skill and Home buttons",
+        "Suppress crossing-center and re-entry deltas",
+        "Reset on resize, portrait, cancellation, focus, Home, death and spawn",
+        "Ignore emulated mouse events with device -1",
+        "Window mouse capture, mouse camera and mouse attack"
+      ],
+      "commands": {
+        "window": "godot --display-driver x11 --rendering-method gl_compatibility --path . --script res://tools/test_arena_touch.gd --audio-driver Dummy",
+        "headless": "godot --headless --path . --script res://tools/test_arena_touch.gd"
+      },
+      "smartphone_hardware_test": false
+    }
+  },
+  "smartphone_rendering_benchmark": false
+}

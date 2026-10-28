@@ -16,7 +16,7 @@ static func safe_position(point: Vector3,last_safe: Vector3,spawn_index: int=0) 
 	if last_safe.is_finite() and inside_city(last_safe) and last_safe.y>=1.0 and last_safe.y<120.0: return last_safe
 	return spawn_points()[posmod(spawn_index,4)]
 
-static func close_gates(world: Node3D) -> Node3D:
+static func close_gates(world: Node3D, draw_visuals: bool = true) -> Node3D:
 	var existing:=world.get_node_or_null("ArenaGateClosures")
 	if existing!=null: return existing
 	var root:=Node3D.new()
@@ -36,12 +36,14 @@ static func close_gates(world: Node3D) -> Node3D:
 		var body:=StaticBody3D.new()
 		body.name="GateBarrier"
 		var shape:=CollisionShape3D.new()
+		shape.name="GateCollision"
 		shape.position.y=GATE_HEIGHT*0.5
 		var box:=BoxShape3D.new()
 		box.size=Vector3(12.0,GATE_HEIGHT,1.0)
 		shape.shape=box
 		body.add_child(shape)
 		gate.add_child(body)
+		if not draw_visuals: continue
 		# A visible portcullis closes the existing stone arch at runtime.
 		for x in range(-11,12):
 			_gate_box(gate,Vector3(x*0.5,GATE_HEIGHT*0.5,0),Vector3(0.16,GATE_HEIGHT,0.26),iron)

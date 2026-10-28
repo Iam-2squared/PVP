@@ -1,0 +1,459 @@
+{
+  "backup_directory": "/tmp/pvp-mesh-weld-backup-39646236",
+  "constraints": {
+    "collision_shape_bytes": "unchanged",
+    "lod_blendshape_existing_shadow_mesh": "retained_without_optimization",
+    "materials": "unchanged",
+    "node_metadata": "unchanged",
+    "ordered_corner_raw_bytes": "unchanged",
+    "transforms_aabb_visibility_shadows": "unchanged",
+    "triangle_order": "unchanged"
+  },
+  "dry_run": false,
+  "engine": {
+    "build": "official",
+    "hash": "7d41c59c457bd5a245092b4e7eb2d833e3b3f8c3",
+    "hex": 263683,
+    "major": 4,
+    "minor": 6,
+    "patch": 3,
+    "status": "stable",
+    "string": "4.6.3-stable (official)",
+    "timestamp": 0
+  },
+  "method": "byte_exact_vertex_weld_original_triangle_order",
+  "parts": [
+    {
+      "candidate_sha256": "abbcc32fe3233aaf655a787376c69462dc1c68d47eaf0d335aa353c2e78b7be6",
+      "collision_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "file": "component_district_ground_surfaces.scn",
+      "immutable_sha256": "a042377a0f9a99b1bcd05d40f6387cb743cdc468e7a23e67d3be32599247bd92",
+      "meshes": 20,
+      "optimized_meshes": 20,
+      "ordered_corner_sha256": "4e16fbcfb4b4c367aaf6554108bb6ec5e37ee600825e5debf197621c5f9789ad",
+      "reload_verified": true,
+      "scene_bytes_after": 453379,
+      "scene_bytes_before": 736313,
+      "skipped": {
+
+      },
+      "source_sha256": "11c60f35ec7b40be2b8e0b90cc63c6f33bccbf01e0884c9931d1442a378aa0fb",
+      "surfaces": 20,
+      "triangles": 83074,
+      "vertices_after": 60344,
+      "vertices_before": 164762,
+      "vertices_removed": 104418
+    },
+    {
+      "candidate_sha256": "13de6ecdc31580c7ee792f8bdc7fc7fbcb9301b4d41b79e9f6a005d6337af7b6",
+      "collision_sha256": "016f219af3d072989ed036f4d8a1b85d1bde5c14bbb53db6a70d4c0bdcc3ff0a",
+      "file": "component_fortifications.scn",
+      "immutable_sha256": "94ffed4b33f39c3cd9d402eaa515c06b48f2f25e4a2ec2bb8196baf41fce8c8c",
+      "meshes": 116,
+      "optimized_meshes": 116,
+      "ordered_corner_sha256": "6f6bc30419a5ecad24b8beb2e39bbc98f8c766d5449af994a023468bfebed480",
+      "reload_verified": true,
+      "scene_bytes_after": 4630795,
+      "scene_bytes_before": 4949990,
+      "skipped": {
+
+      },
+      "source_sha256": "ca2addfa70502d8d42e52bd2051fd822d49b0b5f8d31fb67982a16cefb6861f2",
+      "surfaces": 116,
+      "triangles": 345500,
+      "vertices_after": 512935,
+      "vertices_before": 691000,
+      "vertices_removed": 178065
+    },
+    {
+      "candidate_sha256": "effd8b7274d597806f6b9705ecc07d26bd7c2d23706f369ed81020a589385a80",
+      "collision_sha256": "c6325a4c74bd53bc9c07759fe5915797b41f8911e488347709e95cd7a7a37ca1",
+      "file": "component_level_kingdom_ground.scn",
+      "immutable_sha256": "26702f584701276703c244ffcd6793898e6d6a3a9d1625bd46f595507243da96",
+      "meshes": 1,
+      "optimized_meshes": 1,
+      "ordered_corner_sha256": "5f7e93fba13de52f22ec6241907c964b6418906d58e2d022a5217f4b5b27b2cc",
+      "reload_verified": true,
+      "scene_bytes_after": 2114,
+      "scene_bytes_before": 2174,
+      "skipped": {
+
+      },
+      "source_sha256": "60a88d849e89154037918703817274602df1946b015a4a807ede502e752b4662",
+      "surfaces": 1,
+      "triangles": 12,
+      "vertices_after": 20,
+      "vertices_before": 28,
+      "vertices_removed": 8
+    },
+    {
+      "candidate_sha256": "fb404958339a63d47f73a01347bf4fd185b88160afc2789cb915324c319c07fd",
+      "collision_sha256": "852de557100cda49dcf453b60ff493a614de341fbb741e81d9789eed07376426",
+      "file": "component_palace_interior_0.scn",
+      "immutable_sha256": "4de70b0fac445d154c59355046d39b35236f88e6e450ef1c886796c9ccb163d4",
+      "meshes": 11,
+      "optimized_meshes": 11,
+      "ordered_corner_sha256": "6c4f341594030aff4b4b99caf6acec7e8e460012bae18b6c9f78c633960bb410",
+      "reload_verified": true,
+      "scene_bytes_after": 179634,
+      "scene_bytes_before": 193118,
+      "skipped": {
+
+      },
+      "source_sha256": "c1c06ba023a3cc2ef3ff196df6b82c060faff4219b2c7d9abefa4cbbbbdff6b4",
+      "surfaces": 11,
+      "triangles": 12424,
+      "vertices_after": 18146,
+      "vertices_before": 24848,
+      "vertices_removed": 6702
+    },
+    {
+      "candidate_sha256": "20b1395a98e37ffbbef5a5aee1f0f11ac53f2155621d65ece41bc8678f512cd8",
+      "collision_sha256": "2e48bf9ae463db24c6c8a96258ecb48e56ce7f94575489bb0cee99bb36126c22",
+      "file": "component_palace_interior_1.scn",
+      "immutable_sha256": "0e7407a3f23b245c4aa3d12634254a9da222992f6e886c971795bd53a380d973",
+      "meshes": 11,
+      "optimized_meshes": 11,
+      "ordered_corner_sha256": "fddce94aca03835409f6e392f234538f9e8e253445c52fd6854c67ec7860848d",
+      "reload_verified": true,
+      "scene_bytes_after": 143883,
+      "scene_bytes_before": 153071,
+      "skipped": {
+
+      },
+      "source_sha256": "f0e3a3eac5898ad0004823da7d28018348a0943bb1373e2c62a0fa52ef867888",
+      "surfaces": 11,
+      "triangles": 9834,
+      "vertices_after": 14915,
+      "vertices_before": 19668,
+      "vertices_removed": 4753
+    },
+    {
+      "candidate_sha256": "e11566ce37c79093feae486ac49e881b8cba9687bd2a89e8d537c561e6d2e26c",
+      "collision_sha256": "1ba8ce744510ada52ccdf24904e78b486155acaf243c0a9ea5242b22f9685162",
+      "file": "component_palace_interior_2.scn",
+      "immutable_sha256": "442c92c5b48cf688c196753864319fc9abd207990bc86e08f8b5b9a236e9907a",
+      "meshes": 19,
+      "optimized_meshes": 17,
+      "ordered_corner_sha256": "14ffcad2d21a07a7f1acbc6510c392dd58b0773ed21354fa0db5baa2ca91841c",
+      "reload_verified": true,
+      "scene_bytes_after": 129937,
+      "scene_bytes_before": 138135,
+      "skipped": {
+
+      },
+      "source_sha256": "fdd09ddb3de51203c39aa67eff9f80bd5c25d28a25e1d7125e9e317de2e48070",
+      "surfaces": 19,
+      "triangles": 8732,
+      "vertices_after": 13150,
+      "vertices_before": 17464,
+      "vertices_removed": 4314
+    },
+    {
+      "candidate_sha256": "f45e96057cd7f839774d0996eaf2cbaa6e8a13ef55a470dfb2020feae585a3cb",
+      "collision_sha256": "29d87ef062008eff7752957b81744b1d4b2e89ca0a0743f02dcfcf267f52a0c8",
+      "file": "component_palace_interior_3.scn",
+      "immutable_sha256": "3753a3f5c20176fb2e6654e8108513416ef91779986998dc88614e8bf59c47af",
+      "meshes": 4,
+      "optimized_meshes": 3,
+      "ordered_corner_sha256": "a6fc61ef4a59d325ae71717cc6b9c9d3220ba87b5bd4df75b6ac91b852b538a6",
+      "reload_verified": true,
+      "scene_bytes_after": 19022,
+      "scene_bytes_before": 19832,
+      "skipped": {
+
+      },
+      "source_sha256": "7607d5a3c753f9e86feeb7294be843b249f0d21a1cfef3ba09ddb4598bcb71cb",
+      "surfaces": 4,
+      "triangles": 1058,
+      "vertices_after": 1671,
+      "vertices_before": 2116,
+      "vertices_removed": 445
+    },
+    {
+      "candidate_sha256": "ea9fba61a772c2d9a38c63feed0ab66a9ad73503b161776ce30f1ae7a389260f",
+      "collision_sha256": "5883f1a51a4135a2083fa0b5c2302905738a14b99e8b2b0f49464e6344a41c9f",
+      "file": "component_palace_interior_4.scn",
+      "immutable_sha256": "e0aef39bf362b6345f035d693e9aa349b22b765546448deffc4650f1c531b797",
+      "meshes": 4,
+      "optimized_meshes": 4,
+      "ordered_corner_sha256": "e625f9885e266f758e47371d29346ecf21c63a1dd622d6ec88196a93cda2869d",
+      "reload_verified": true,
+      "scene_bytes_after": 21550,
+      "scene_bytes_before": 22957,
+      "skipped": {
+
+      },
+      "source_sha256": "e2c3f0fa59225eb0d7cba7a34a144f880cd0f4a03c0902f9da21498781dd51a6",
+      "surfaces": 4,
+      "triangles": 1244,
+      "vertices_after": 1888,
+      "vertices_before": 2488,
+      "vertices_removed": 600
+    },
+    {
+      "candidate_sha256": "86866bd7b240cb04bf392c3356010b5b056bcb37fdc66d234c64a52a253f169b",
+      "collision_sha256": "a604984458c0ab8901a224ae7836011c006523c901d16599e63bdddf3c5aeee3",
+      "file": "component_palace_interior_5.scn",
+      "immutable_sha256": "07db57b6d292a3e76aa189fb5b67642c96b17f0a411f1a115c53f6f960f76fca",
+      "meshes": 4,
+      "optimized_meshes": 4,
+      "ordered_corner_sha256": "3d3c79b98af0d129c34d1e8eddcde0344f0d4b89b7b1eb886270071aec25aa6e",
+      "reload_verified": true,
+      "scene_bytes_after": 16106,
+      "scene_bytes_before": 16471,
+      "skipped": {
+
+      },
+      "source_sha256": "4684cd30531752cefaa540f9d3d3ec823a1532b6b13721d241482559343bbd4f",
+      "surfaces": 4,
+      "triangles": 836,
+      "vertices_after": 1485,
+      "vertices_before": 1672,
+      "vertices_removed": 187
+    },
+    {
+      "candidate_sha256": "613ff6235506c84d5aa73637f2e2e502a40d7c427a924f57caf8853f339c46a1",
+      "collision_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "file": "component_palace_interior_details_15.scn",
+      "immutable_sha256": "611ae49d9a9e5cd69b0da154c8954445626bacfa90ef8683cf271d7cf6ecd696",
+      "meshes": 7,
+      "optimized_meshes": 6,
+      "ordered_corner_sha256": "ae87c3998d32a144bae79dbc6409b97295d7c85847bcf8419a6b1fad5d616e3a",
+      "reload_verified": true,
+      "scene_bytes_after": 134208,
+      "scene_bytes_before": 147035,
+      "skipped": {
+
+      },
+      "source_sha256": "c9c1005ae92d2210d35828f805a9127908194205c4be287ca9ee45d60ad11f2b",
+      "surfaces": 7,
+      "triangles": 16332,
+      "vertices_after": 24316,
+      "vertices_before": 32664,
+      "vertices_removed": 8348
+    },
+    {
+      "candidate_sha256": "19b73220a9273bb1c0be32ead232e90e6e8a01d6339e6430de1510a31fa17193",
+      "collision_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "file": "component_palace_interior_details_21.scn",
+      "immutable_sha256": "2328459f717171a999734d9cd997257d7dab8db179e34412297930f159f7ee2a",
+      "meshes": 6,
+      "optimized_meshes": 4,
+      "ordered_corner_sha256": "0ab19da411bf757e6e88c09d3bbec2ba30a312d6c9432f40691d7f1baa584970",
+      "reload_verified": true,
+      "scene_bytes_after": 101166,
+      "scene_bytes_before": 110243,
+      "skipped": {
+
+      },
+      "source_sha256": "bd39e62bdc3e07acb4bb851d7bb812856a7d874d943175d13a05942830e2d6bf",
+      "surfaces": 6,
+      "triangles": 12192,
+      "vertices_after": 18698,
+      "vertices_before": 24384,
+      "vertices_removed": 5686
+    },
+    {
+      "candidate_sha256": "db843f6b0303c080ff5da9a87eaa1f550b5d453bdbe02a92ab2fa9061f81e2c8",
+      "collision_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "file": "component_palace_interior_details_27.scn",
+      "immutable_sha256": "a6689e5e6200406142975671d5ecd5153bb5def8b3d5dbbbd6e04ec331e8af71",
+      "meshes": 8,
+      "optimized_meshes": 6,
+      "ordered_corner_sha256": "3538745c439a8fb4ef5df7564752ffcc6c5529a7ab828efcb802550d42de8758",
+      "reload_verified": true,
+      "scene_bytes_after": 69039,
+      "scene_bytes_before": 76065,
+      "skipped": {
+
+      },
+      "source_sha256": "482aa8869d8c28277e6483023381991e82951ae9876a3323ca6e63435c3e9a99",
+      "surfaces": 8,
+      "triangles": 8328,
+      "vertices_after": 12116,
+      "vertices_before": 16656,
+      "vertices_removed": 4540
+    },
+    {
+      "candidate_sha256": "0f2a6a0b203a8d40b5f609913bdae32077172d66fe4c81914a00e1e21d4d1ab1",
+      "collision_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "file": "component_palace_interior_details_33.scn",
+      "immutable_sha256": "e220561da550e4bdb1da612597a8cc6cd7e8ee5b22007e2dbe34d9b5f3d10664",
+      "meshes": 4,
+      "optimized_meshes": 3,
+      "ordered_corner_sha256": "002c5994d7c2c4cdda3d960db0c75bdfd308d31746623f131362f871b814aeee",
+      "reload_verified": true,
+      "scene_bytes_after": 28219,
+      "scene_bytes_before": 30354,
+      "skipped": {
+
+      },
+      "source_sha256": "6b52e1f5dc423a04b57894587d680191cbc543b851160879b5065f3ec6236bc9",
+      "surfaces": 4,
+      "triangles": 3036,
+      "vertices_after": 4984,
+      "vertices_before": 6072,
+      "vertices_removed": 1088
+    },
+    {
+      "candidate_sha256": "6be76f34550e3cd491032763bb3d020deaf67828752352942064a88ad1645634",
+      "collision_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "file": "component_palace_interior_details_39.scn",
+      "immutable_sha256": "d7dae2d94ae0a5551fbb03c4dae7a87c192df639ef0b3700a9e716a3aaff6560",
+      "meshes": 1,
+      "optimized_meshes": 1,
+      "ordered_corner_sha256": "511e6dfb1f6f9b2ce92b45d14f17586b906b02b49fd605652d576ca9ac5f8970",
+      "reload_verified": true,
+      "scene_bytes_after": 4482,
+      "scene_bytes_before": 4491,
+      "skipped": {
+
+      },
+      "source_sha256": "b79f5e7472765174cb4c15b13a4bd6c370e26310302f6d0afd8c9818f8b257fc",
+      "surfaces": 1,
+      "triangles": 264,
+      "vertices_after": 514,
+      "vertices_before": 528,
+      "vertices_removed": 14
+    },
+    {
+      "candidate_sha256": "0c6a0e98b917d8aa9c652d141fc7c704a20f5f5e1f6acedeb0277afb504e8d77",
+      "collision_sha256": "b536dddfc56b1bb6eea0bf84abb96af8cac1367849c6ace082be06ec8753f213",
+      "file": "component_royal_palace_exterior.scn",
+      "immutable_sha256": "67c88b5ed3ac5230be4eddcbbd89e7a4d84859a2177981cfef49bcbca2cdc23b",
+      "meshes": 36,
+      "optimized_meshes": 36,
+      "ordered_corner_sha256": "67062f1d08a1fbfd1b43f005fe704a59fadaa2c330b81ff97698342a3323e2ee",
+      "reload_verified": true,
+      "scene_bytes_after": 2979166,
+      "scene_bytes_before": 3274905,
+      "skipped": {
+
+      },
+      "source_sha256": "a11af1f5c00c0ee193f4493588fb3c8e7818b7c5c3083089b3de7d173c942b43",
+      "surfaces": 36,
+      "triangles": 224192,
+      "vertices_after": 305392,
+      "vertices_before": 448384,
+      "vertices_removed": 142992
+    },
+    {
+      "candidate_sha256": "87f972db865bce9fac88f7565de37bca4a771d61f1b3b04d799abf67cfcd6f14",
+      "collision_sha256": "788d4dff63c9dcb496bf5aaf32218efe765ada68b0d549982c86d36deed460d1",
+      "file": "component_town_district_north_east.scn",
+      "immutable_sha256": "5d83a65d8eda71330951b50dfde541cdb106ea599ce777a2b96a23eb7809689c",
+      "meshes": 16,
+      "optimized_meshes": 16,
+      "ordered_corner_sha256": "d64157c5d7f15d4e652c055bc48e0965880072e7393eead2c39044eb35cb1d75",
+      "reload_verified": true,
+      "scene_bytes_after": 898257,
+      "scene_bytes_before": 1001603,
+      "skipped": {
+
+      },
+      "source_sha256": "42d18f9a14fd7e57fe56e6db6b5c0a63a8eac46ef29752a96097a78a4207a0dc",
+      "surfaces": 16,
+      "triangles": 68158,
+      "vertices_after": 88071,
+      "vertices_before": 136316,
+      "vertices_removed": 48245
+    },
+    {
+      "candidate_sha256": "02e5df249689ab4b4a41704c03ea33ff384677a68ac6a21d3086a6ee9ffcb5be",
+      "collision_sha256": "da3e8e4423dfb02448d33e400d0d7a3bcafd51dc0b2da4cf3aa4eea54111d1a5",
+      "file": "component_town_district_north_west.scn",
+      "immutable_sha256": "f55a832df4aa4ef71e2234c072a02413f6e4c2d3f8f2626a368eb73f6c53b46a",
+      "meshes": 13,
+      "optimized_meshes": 13,
+      "ordered_corner_sha256": "0105db074db3d9059e134e3548b0a9619fad01697c9de399abd988ff79d966a2",
+      "reload_verified": true,
+      "scene_bytes_after": 841938,
+      "scene_bytes_before": 945681,
+      "skipped": {
+
+      },
+      "source_sha256": "b8bf383f2767df4d34475e3b317237167247f273e04265e7f319591d73af6311",
+      "surfaces": 13,
+      "triangles": 64822,
+      "vertices_after": 81616,
+      "vertices_before": 129644,
+      "vertices_removed": 48028
+    },
+    {
+      "candidate_sha256": "048fa953595a4d146d22c4578fd5becc00c621d46a787895e8a1610f149642e2",
+      "collision_sha256": "7756842bac6d3251afafc7efc8b56949155d30e3339a614a27f915ce162353ae",
+      "file": "component_town_district_south_east.scn",
+      "immutable_sha256": "a57b28dc2fff538a84dbf85635c5963eb0c3c557ec5203b7f5910f70441b8476",
+      "meshes": 20,
+      "optimized_meshes": 20,
+      "ordered_corner_sha256": "891458c99c489cf79232604883df88fb99dab2e446884e7393e5e4abd7028356",
+      "reload_verified": true,
+      "scene_bytes_after": 2458092,
+      "scene_bytes_before": 2757690,
+      "skipped": {
+
+      },
+      "source_sha256": "8be09f9a089d4b3c1ce7a20e16799388639411f075c46d10e42a5c2d62eec857",
+      "surfaces": 20,
+      "triangles": 196520,
+      "vertices_after": 247365,
+      "vertices_before": 393040,
+      "vertices_removed": 145675
+    },
+    {
+      "candidate_sha256": "ee4a56c6bc6386818173d878dada6b137f714f413d55b25b434847a28b5c9cca",
+      "collision_sha256": "fbb3432af5c49326a7863352af0cb22524f8485da1c48bdaecbea6e919bd148c",
+      "file": "component_town_district_south_west.scn",
+      "immutable_sha256": "29742d9ec80f5f147c01b8c5df9559c3e1c7acc862b20c233583cacb928a4cee",
+      "meshes": 18,
+      "optimized_meshes": 18,
+      "ordered_corner_sha256": "a21210cc90939fe5c8508ff504d9ca6a1bb05e85b80e546bde88f00393319f47",
+      "reload_verified": true,
+      "scene_bytes_after": 2494220,
+      "scene_bytes_before": 2805718,
+      "skipped": {
+
+      },
+      "source_sha256": "ef8ae6d502e194ec9dd8500636c85a44e7d88195763960399732206ca50dc4e4",
+      "surfaces": 18,
+      "triangles": 198900,
+      "vertices_after": 249464,
+      "vertices_before": 397800,
+      "vertices_removed": 148336
+    },
+    {
+      "candidate_sha256": "d0fd52cc33eeaa56a6832adec36e9f4a54e13df4e244d1ef3f9db601cf19c073",
+      "collision_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "file": "component_town_micro_details.scn",
+      "immutable_sha256": "6e0d7ee191484b3f8ea7180c89501d97ca970934f083612eee2d2d206305b3db",
+      "meshes": 70,
+      "optimized_meshes": 60,
+      "ordered_corner_sha256": "988239659ea2f90aa568943bfc22a87ef4cbe9414447fcfbef9294a8fcea4529",
+      "reload_verified": true,
+      "scene_bytes_after": 3989693,
+      "scene_bytes_before": 4020460,
+      "skipped": {
+
+      },
+      "source_sha256": "7790eb07f4fd096e0a4b26410d515c1e9d3951c20490c5a2ef51ea4f907a3cb6",
+      "surfaces": 70,
+      "triangles": 435526,
+      "vertices_after": 795785,
+      "vertices_before": 873462,
+      "vertices_removed": 77677
+    }
+  ],
+  "seconds": 39.625,
+  "totals": {
+    "meshes": 389,
+    "optimized_meshes": 370,
+    "scene_bytes_after": 19594900,
+    "scene_bytes_before": 21406306,
+    "surfaces": 389,
+    "triangles": 1690984,
+    "vertices_after": 2452875,
+    "vertices_before": 3382996,
+    "vertices_removed": 930121
+  }
+}

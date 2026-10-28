@@ -15,6 +15,7 @@ var blocked := false:
 			reset_input()
 		if is_instance_valid(_canvas):
 			_canvas.visible = not value
+		_request_redraw()
 
 var _canvas: HudCanvas
 var _font: Font
@@ -34,6 +35,11 @@ var _target_max := 100.0
 var _skill_name := "強撃"
 var _cooldown := 0.0
 var _pressed: Dictionary = {}
+var _hud_dirty := true
+var _view_size := Vector2.ZERO
+var _view_scale := 1.0
+var _rect_cache: Dictionary = {}
+var _panel_style: StyleBoxFlat
 
 const PAPER := Color(0.94, 0.95, 0.91, 0.80)
 const MUTED := Color(0.91, 0.93, 0.90, 0.56)
@@ -60,13 +66,34 @@ func _ready() -> void:
 	_canvas.host = self
 	add_child(_canvas)
 	_canvas.visible = not blocked
+	_refresh_layout()
+	get_viewport().size_changed.connect(_refresh_layout)
 
 
 func _process(delta: float) -> void:
 	if _feedback_remaining > 0.0:
 		_feedback_remaining = maxf(0.0, _feedback_remaining - delta)
-	if _canvas:
+		if _feedback_fades() or _feedback_remaining == 0.0:
+			_hud_dirty = true
+	if _hud_dirty and visible and is_instance_valid(_canvas) and _canvas.visible:
 		_canvas.queue_redraw()
+		_hud_dirty = false
+
+
+func _request_redraw() -> void:
+	_hud_dirty = true
+
+
+func _feedback_fades() -> bool:
+	return true
+
+
+func _refresh_layout() -> void:
+	reset_input()
+	_view_size = get_viewport().get_visible_rect().size
+	_view_scale = clampf(minf(_view_size.x / 1000.0, _view_size.y / 570.0), 0.65, 1.0)
+	_rect_cache.clear()
+	_request_redraw()
 
 
 func _notification(what: int) -> void:
@@ -75,17 +102,20 @@ func _notification(what: int) -> void:
 
 
 func _viewport_size() -> Vector2:
-	return get_viewport().get_visible_rect().size
+	return _view_size
 
 
 func _layout_scale() -> float:
-	var view := _viewport_size()
-	return clampf(minf(view.x / 1000.0, view.y / 570.0), 0.65, 1.0)
+	return _view_scale
 
 
 func _control_rects() -> Dictionary:
-	var view := _viewport_size()
-	var s := _layout_scale()
+	if _rect_cache.is_empty():
+		_rect_cache = _build_control_rects(_view_size, _view_scale)
+	return _rect_cache
+
+
+func _build_control_rects(view: Vector2, s: float) -> Dictionary:
 	return {
 		"stick": Rect2(Vector2(35.0 * s, view.y - 186.0 * s), Vector2(142, 142) * s),
 		"attack": Rect2(Vector2(view.x - 151.0 * s, view.y - 185.0 * s), Vector2(112, 112) * s),
@@ -117,6 +147,12 @@ func _input(event: InputEvent) -> void:
 	if not visible or blocked or not is_instance_valid(_canvas) or not _canvas.visible:
 		return
 	if event is InputEventScreenTouch:
+		if event.canceled:
+			if _touch_owners.has(event.index):
+				_release_owner(_touch_owners[event.index])
+				_touch_owners.erase(event.index)
+				get_viewport().set_input_as_handled()
+			return
 		if event.pressed:
 			var owner := _hit_control(event.position)
 			if owner.is_empty():
@@ -127,6 +163,7 @@ func _input(event: InputEvent) -> void:
 				return
 			_touch_owners[event.index] = owner
 			_pressed[owner] = true
+			_request_redraw()
 			if owner == "stick":
 				_update_stick(event.position)
 			else:
@@ -147,6 +184,7 @@ func _input(event: InputEvent) -> void:
 				return
 			_mouse_owner = owner
 			_pressed[owner] = true
+			_request_redraw()
 			if owner == "stick":
 				_update_stick(event.position)
 			else:
@@ -174,6 +212,7 @@ func _update_stick(pos: Vector2) -> void:
 	var rect: Rect2 = _control_rects()["stick"]
 	_stick_value = ((pos - rect.get_center()) / (rect.size.x * 0.34)).limit_length(1.0)
 	move_vector = _stick_value
+	_request_redraw()
 
 
 func _release_owner(owner: String) -> void:
@@ -181,6 +220,7 @@ func _release_owner(owner: String) -> void:
 	if owner == "stick":
 		move_vector = Vector2.ZERO
 		_stick_value = Vector2.ZERO
+	_request_redraw()
 
 
 func reset_input() -> void:
@@ -189,6 +229,7 @@ func reset_input() -> void:
 	_touch_owners.clear()
 	_mouse_owner = ""
 	_pressed.clear()
+	_request_redraw()
 
 
 func set_status(job_name: String, hp: float, mp: float, equipped: bool) -> void:
@@ -196,23 +237,27 @@ func set_status(job_name: String, hp: float, mp: float, equipped: bool) -> void:
 	_hp = clampf(hp, 0.0, 100.0)
 	_mp = clampf(mp, 0.0, 100.0)
 	_equipped = equipped
+	_request_redraw()
 
 
 func show_feedback(message: String, strong: bool = false) -> void:
 	_feedback = message
 	_feedback_remaining = 1.5
 	_feedback_strong = strong
+	_request_redraw()
 
 
 func set_target(target_name: String, hp: float, max_hp: float) -> void:
 	_target_name = target_name
 	_target_hp = hp
 	_target_max = maxf(max_hp, 0.001)
+	_request_redraw()
 
 
 func set_skill(skill_name: String, cooldown: float) -> void:
 	_skill_name = skill_name
 	_cooldown = maxf(cooldown, 0.0)
+	_request_redraw()
 
 
 func _text(canvas: Control, content: String, pos: Vector2, font_size: int, color: Color = PAPER) -> void:
@@ -227,12 +272,13 @@ func _center_text(canvas: Control, content: String, center: Vector2, font_size: 
 
 
 func _panel(canvas: Control, rect: Rect2) -> void:
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.035, 0.065, 0.07, 0.23)
-	style.border_color = Color(0.82, 0.88, 0.83, 0.20)
-	style.set_border_width_all(1)
-	style.set_corner_radius_all(7)
-	canvas.draw_style_box(style, rect)
+	if _panel_style == null:
+		_panel_style = StyleBoxFlat.new()
+		_panel_style.bg_color = Color(0.035, 0.065, 0.07, 0.23)
+		_panel_style.border_color = Color(0.82, 0.88, 0.83, 0.20)
+		_panel_style.set_border_width_all(1)
+		_panel_style.set_corner_radius_all(7)
+	canvas.draw_style_box(_panel_style, rect)
 
 
 func _meter(canvas: Control, rect: Rect2, ratio: float, tint: Color) -> void:

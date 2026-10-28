@@ -23,7 +23,7 @@
     "res://generated/parts/component_town_district_south_east.scn",
     "res://generated/parts/component_town_micro_details.scn"
   ],
-  "total_scene_bytes": 21546204,
+  "total_scene_bytes": 19734798,
   "world": {
     "design": {
       "city_half_extent": 160.0,
@@ -15374,5 +15374,12 @@
       "voxel_size": 0.5,
       "voxels": 2085810
     }
+  },
+  "render_optimization": {
+    "method": "byte_exact_vertex_weld_original_triangle_order",
+    "vertices_before": 3382996,
+    "vertices_after": 2452875,
+    "triangles": 1690984,
+    "objects_materials_shadows_collision_unchanged": true
   }
 }

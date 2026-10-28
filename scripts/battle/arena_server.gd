@@ -31,9 +31,9 @@ func _ready() -> void:
 	if not _load_profiles():
 		listen_error=ERR_FILE_CORRUPT
 		return
-	world=load("res://generated/kingdom.scn").instantiate()
+	world=load("res://generated/server_kingdom.scn").instantiate()
 	add_child(world)
-	Rules.close_gates(world)
+	Rules.close_gates(world,false)
 	listen_error=_tcp.listen(port,bind_address)
 	_running=listen_error==OK
 	if _running: print("ARENA_SERVER_READY ",JSON.stringify({"port":port,"mode":"unlimited_pvp","spawn_gates":4}))

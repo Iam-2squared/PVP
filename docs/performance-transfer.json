@@ -1,0 +1,61 @@
+{
+  "assets": [
+    {
+      "file": "index.audio.position.worklet.js",
+      "raw_bytes": 2973,
+      "gzip_bytes": 1167,
+      "sha256": "be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8",
+      "decoded_bytes_exact": true
+    },
+    {
+      "file": "index.audio.worklet.js",
+      "raw_bytes": 7298,
+      "gzip_bytes": 2204,
+      "sha256": "5b476a9c9ce642c0ee4256436d1bc31d9c38f868aca0f9a8e2a57c18d2dec2a3",
+      "decoded_bytes_exact": true
+    },
+    {
+      "file": "index.js",
+      "raw_bytes": 315759,
+      "gzip_bytes": 78637,
+      "sha256": "e3f56ee40e6f84371053db06692cfac15e2c8659547b11c6b2dfa1996dabd981",
+      "decoded_bytes_exact": true
+    },
+    {
+      "file": "index.pck",
+      "raw_bytes": 20911496,
+      "gzip_bytes": 20346080,
+      "sha256": "a74b3f0eef24a63cc9089d82d9ecb1531cc2f410b43157bd7a2694b0db2e7c68",
+      "decoded_bytes_exact": true
+    },
+    {
+      "file": "index.wasm",
+      "raw_bytes": 37700666,
+      "gzip_bytes": 9436629,
+      "sha256": "26b61ce95247012ab3dca3ff51e96d1cdbff44ee91a8c20a83e150afca83f1b6",
+      "decoded_bytes_exact": true
+    }
+  ],
+  "raw_total_bytes": 58938192,
+  "gzip_total_bytes": 29864717,
+  "method": "Python standard gzip level6; original files unchanged; HTTP Content-Encoding negotiation",
+  "schema_version": 1,
+  "scope": "HTTP response-body bytes of five final WASM/PCK/JavaScript assets only. Excludes HTML, headers and other page requests. Original assets are unchanged by gzip preparation.",
+  "compression_reduction_percent": 49.33,
+  "fixture_tests": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 python3 tools/test_serve_preview.py",
+    "test_groups": 7,
+    "failures": 0,
+    "cases": [
+      "18 Accept-Encoding and quality-value combinations",
+      "GET and HEAD of all three fixture file types",
+      "Exact decompressed bytes and SHA-256",
+      "Representation-specific ETag and conditional 304",
+      "Changed or corrupt source/gzip raw fallback",
+      "Atomic preparation failure and read-only directory raw fallback",
+      "Standalone single-file --prepare-only"
+    ],
+    "scope": "Small temporary fixtures, separate from the actual final-export byte comparison above."
+  },
+  "smartphone_fps_or_load_time_benchmark": false
+}

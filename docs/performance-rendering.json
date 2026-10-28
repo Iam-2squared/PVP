@@ -1,0 +1,300 @@
+{
+  "schema_version": 1,
+  "accepted_geometry": "byte_exact_vertex_weld_only",
+  "scope": "Visual objects, original triangle order, all packed corner attributes, materials, transforms, shadows, colliders and graphics settings are preserved. No shadow_mesh additions or triangle cache reorder experiments are retained.",
+  "method": {
+    "engine": "Godot 4.6.3 stable official",
+    "platform": "Linux x86_64",
+    "renderer": "Mesa llvmpipe (LLVM 19.1.7, 256 bits)",
+    "rendering_driver": "opengl3",
+    "viewport": [
+      1280,
+      720
+    ],
+    "frames_per_view": 20,
+    "warmup_frames_per_view": 8,
+    "frame_timing": "Wall-clock time around process_frame plus frame_post_draw, no engine FPS cap. The benchmark requests VSYNC_DISABLED; driver support may vary.",
+    "scope": "Same fixed poses of the battle city with HUD and local-player processing disabled; not a whole online session.",
+    "command": "godot --path . --script res://tools/benchmark_rendering.gd -- --output=res://captures/render-benchmark --frames=20",
+    "limitations": "A single 20-frame sample per view in a shared software-rendering environment. Results vary by view; market_street is slower after welding. No universal frame-rate improvement, hardware GPU or smartphone speed claim."
+  },
+  "before": {
+    "load_us": 2184115,
+    "measurements": [
+      {
+        "draw_calls": 411.0,
+        "frame_median_ms": 1000.851,
+        "frame_p95_ms": 1057.556,
+        "frames": 20,
+        "physics_median_ms": 0.042,
+        "pose": "south_gate",
+        "primitives": 2257138.0,
+        "process_median_ms": 989.079
+      },
+      {
+        "draw_calls": 115.0,
+        "frame_median_ms": 358.59,
+        "frame_p95_ms": 426.87,
+        "frames": 20,
+        "physics_median_ms": 0.046,
+        "pose": "market_street",
+        "primitives": 570113.0,
+        "process_median_ms": 379.305
+      },
+      {
+        "draw_calls": 238.0,
+        "frame_median_ms": 403.064,
+        "frame_p95_ms": 440.598,
+        "frames": 20,
+        "physics_median_ms": 0.046,
+        "pose": "palace_forecourt",
+        "primitives": 906736.0,
+        "process_median_ms": 416.031
+      },
+      {
+        "draw_calls": 251.0,
+        "frame_median_ms": 358.612,
+        "frame_p95_ms": 391.657,
+        "frames": 20,
+        "physics_median_ms": 0.045,
+        "pose": "overview",
+        "primitives": 1182738.0,
+        "process_median_ms": 376.149
+      }
+    ],
+    "renderer": "llvmpipe (LLVM 19.1.7, 256 bits)",
+    "rendering_driver": "opengl3",
+    "viewport": [
+      1280,
+      720
+    ]
+  },
+  "accepted_weld": {
+    "load_us": 1902922,
+    "measurements": [
+      {
+        "draw_calls": 411.0,
+        "frame_median_ms": 832.028,
+        "frame_p95_ms": 896.471,
+        "frames": 20,
+        "physics_median_ms": 0.046,
+        "pose": "south_gate",
+        "primitives": 2257138.0,
+        "process_median_ms": 831.859
+      },
+      {
+        "draw_calls": 115.0,
+        "frame_median_ms": 369.577,
+        "frame_p95_ms": 423.64,
+        "frames": 20,
+        "physics_median_ms": 0.064,
+        "pose": "market_street",
+        "primitives": 570113.0,
+        "process_median_ms": 409.185
+      },
+      {
+        "draw_calls": 238.0,
+        "frame_median_ms": 402.292,
+        "frame_p95_ms": 456.55,
+        "frames": 20,
+        "physics_median_ms": 0.046,
+        "pose": "palace_forecourt",
+        "primitives": 906736.0,
+        "process_median_ms": 414.629
+      },
+      {
+        "draw_calls": 251.0,
+        "frame_median_ms": 342.007,
+        "frame_p95_ms": 426.612,
+        "frames": 20,
+        "physics_median_ms": 0.048,
+        "pose": "overview",
+        "primitives": 1182738.0,
+        "process_median_ms": 363.766
+      }
+    ],
+    "renderer": "llvmpipe (LLVM 19.1.7, 256 bits)",
+    "rendering_driver": "opengl3",
+    "viewport": [
+      1280,
+      720
+    ]
+  },
+  "pixel_comparison": {
+    "method": "PNG images decoded to RGBA and compared byte for byte independently of PNG encoding.",
+    "all_four_views_rgba_identical": true,
+    "views": [
+      {
+        "view": "market_street",
+        "rgba_identical": true,
+        "resolution": [
+          1280,
+          720
+        ],
+        "difference_bbox": null,
+        "rgba_sha256_before": "bf5492bfea273e9e73b522fcac7fc8e9bf6043a1ff6aa8217ab20fe58e46ef70",
+        "rgba_sha256_after": "bf5492bfea273e9e73b522fcac7fc8e9bf6043a1ff6aa8217ab20fe58e46ef70"
+      },
+      {
+        "view": "overview",
+        "rgba_identical": true,
+        "resolution": [
+          1280,
+          720
+        ],
+        "difference_bbox": null,
+        "rgba_sha256_before": "3cf196c76505d04eaeaeb06c04e70f9c19b0270786207f6159cbee19e43fd551",
+        "rgba_sha256_after": "3cf196c76505d04eaeaeb06c04e70f9c19b0270786207f6159cbee19e43fd551"
+      },
+      {
+        "view": "palace_forecourt",
+        "rgba_identical": true,
+        "resolution": [
+          1280,
+          720
+        ],
+        "difference_bbox": null,
+        "rgba_sha256_before": "fffceae9e126fd199114d4f07f84da7a16c0f3b52fca6e9c20b695b057cd6664",
+        "rgba_sha256_after": "fffceae9e126fd199114d4f07f84da7a16c0f3b52fca6e9c20b695b057cd6664"
+      },
+      {
+        "view": "south_gate",
+        "rgba_identical": true,
+        "resolution": [
+          1280,
+          720
+        ],
+        "difference_bbox": null,
+        "rgba_sha256_before": "1700cbf2629b2b80b0e0a7c107683ae7ee93398361de16f612bedcb6e5a53d46",
+        "rgba_sha256_after": "1700cbf2629b2b80b0e0a7c107683ae7ee93398361de16f612bedcb6e5a53d46"
+      }
+    ]
+  },
+  "final_geometry_verification": {
+    "all_20_parts_match_verified_weld_candidate_sha256": true,
+    "parts": [
+      {
+        "file": "component_district_ground_surfaces.scn",
+        "sha256": "abbcc32fe3233aaf655a787376c69462dc1c68d47eaf0d335aa353c2e78b7be6",
+        "matches_verified_weld_candidate": true
+      },
+      {
+        "file": "component_fortifications.scn",
+        "sha256": "13de6ecdc31580c7ee792f8bdc7fc7fbcb9301b4d41b79e9f6a005d6337af7b6",
+        "matches_verified_weld_candidate": true
+      },
+      {
+        "file": "component_level_kingdom_ground.scn",
+        "sha256": "effd8b7274d597806f6b9705ecc07d26bd7c2d23706f369ed81020a589385a80",
+        "matches_verified_weld_candidate": true
+      },
+      {
+        "file": "component_palace_interior_0.scn",
+        "sha256": "fb404958339a63d47f73a01347bf4fd185b88160afc2789cb915324c319c07fd",
+        "matches_verified_weld_candidate": true
+      },
+      {
+        "file": "component_palace_interior_1.scn",
+        "sha256": "20b1395a98e37ffbbef5a5aee1f0f11ac53f2155621d65ece41bc8678f512cd8",
+        "matches_verified_weld_candidate": true
+      },
+      {
+        "file": "component_palace_interior_2.scn",
+        "sha256": "e11566ce37c79093feae486ac49e881b8cba9687bd2a89e8d537c561e6d2e26c",
+        "matches_verified_weld_candidate": true
+      },
+      {
+        "file": "component_palace_interior_3.scn",
+        "sha256": "f45e96057cd7f839774d0996eaf2cbaa6e8a13ef55a470dfb2020feae585a3cb",
+        "matches_verified_weld_candidate": true
+      },
+      {
+        "file": "component_palace_interior_4.scn",
+        "sha256": "ea9fba61a772c2d9a38c63feed0ab66a9ad73503b161776ce30f1ae7a389260f",
+        "matches_verified_weld_candidate": true
+      },
+      {
+        "file": "component_palace_interior_5.scn",
+        "sha256": "86866bd7b240cb04bf392c3356010b5b056bcb37fdc66d234c64a52a253f169b",
+        "matches_verified_weld_candidate": true
+      },
+      {
+        "file": "component_palace_interior_details_15.scn",
+        "sha256": "613ff6235506c84d5aa73637f2e2e502a40d7c427a924f57caf8853f339c46a1",
+        "matches_verified_weld_candidate": true
+      },
+      {
+        "file": "component_palace_interior_details_21.scn",
+        "sha256": "19b73220a9273bb1c0be32ead232e90e6e8a01d6339e6430de1510a31fa17193",
+        "matches_verified_weld_candidate": true
+      },
+      {
+        "file": "component_palace_interior_details_27.scn",
+        "sha256": "db843f6b0303c080ff5da9a87eaa1f550b5d453bdbe02a92ab2fa9061f81e2c8",
+        "matches_verified_weld_candidate": true
+      },
+      {
+        "file": "component_palace_interior_details_33.scn",
+        "sha256": "0f2a6a0b203a8d40b5f609913bdae32077172d66fe4c81914a00e1e21d4d1ab1",
+        "matches_verified_weld_candidate": true
+      },
+      {
+        "file": "component_palace_interior_details_39.scn",
+        "sha256": "6be76f34550e3cd491032763bb3d020deaf67828752352942064a88ad1645634",
+        "matches_verified_weld_candidate": true
+      },
+      {
+        "file": "component_royal_palace_exterior.scn",
+        "sha256": "0c6a0e98b917d8aa9c652d141fc7c704a20f5f5e1f6acedeb0277afb504e8d77",
+        "matches_verified_weld_candidate": true
+      },
+      {
+        "file": "component_town_district_north_east.scn",
+        "sha256": "87f972db865bce9fac88f7565de37bca4a771d61f1b3b04d799abf67cfcd6f14",
+        "matches_verified_weld_candidate": true
+      },
+      {
+        "file": "component_town_district_north_west.scn",
+        "sha256": "02e5df249689ab4b4a41704c03ea33ff384677a68ac6a21d3086a6ee9ffcb5be",
+        "matches_verified_weld_candidate": true
+      },
+      {
+        "file": "component_town_district_south_east.scn",
+        "sha256": "048fa953595a4d146d22c4578fd5becc00c621d46a787895e8a1610f149642e2",
+        "matches_verified_weld_candidate": true
+      },
+      {
+        "file": "component_town_district_south_west.scn",
+        "sha256": "ee4a56c6bc6386818173d878dada6b137f714f413d55b25b434847a28b5c9cca",
+        "matches_verified_weld_candidate": true
+      },
+      {
+        "file": "component_town_micro_details.scn",
+        "sha256": "d0fd52cc33eeaa56a6832adec36e9f4a54e13df4e244d1ef3f9db601cf19c073",
+        "matches_verified_weld_candidate": true
+      }
+    ],
+    "attribute_and_scene_proof": "mesh-optimization-stats.json"
+  },
+  "not_adopted": {
+    "shadow_position_sharing_with_index_cache": {
+      "decision": "Rejected and production part files restored to the verified weld candidates.",
+      "reason": "Observed rendering times were close to weld-only while the candidate added memory and file size.",
+      "extra_headless_managed_memory_observed_bytes": 16493235,
+      "extra_compressed_part_files_bytes": 6507316,
+      "comparison_baseline": "Accepted weld-only parts. These extra resources are not included in the final production assets.",
+      "memory_limitations": "Single headless creation-process observation, not Web, smartphone, OS RSS or measured GPU memory."
+    }
+  },
+  "smartphone_rendering_benchmark": false,
+  "world_metrics_design_verification": {
+    "compared_to_commit": "a2702f4ea891130ec72c7fafac382d2b958ab6fc",
+    "excluded_derived_fields": [
+      "render_optimization",
+      "total_scene_bytes"
+    ],
+    "all_other_fields_equal": true,
+    "canonical_design_sha256": "f4d1381c1fb39744708ee64ee755b889eb1d565b0cf13d8ed748b8c5052ae593",
+    "final_client_scene_files_bytes": 19734798
+  }
+}

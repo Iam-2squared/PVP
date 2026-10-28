@@ -102,27 +102,12 @@ function Find-Godot {
 }
 
 function Ensure-WebTemplates {
-    $template = Join-Path $env:APPDATA "Godot\export_templates\4.6.3.stable\web_release.zip"
-    if (Test-Path -LiteralPath $template) { return }
-    Say "Godot Web export templates are missing. First launch needs an official large download."
-    $answer = Read-Host "Download official 4.6.3 export templates now (may be over 1 GB)? [Y/n]"
-    if ($answer -match "^[Nn]") { throw "Install Web export templates in Godot Editor -> Manage Export Templates, then retry." }
+    $target = Join-Path $env:APPDATA "Godot\export_templates\4.6.3.stable"
     $archive = Join-Path $bin "godot-export-templates.zip"
-    Download-Official "https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_export_templates.tpz" $archive
-    $unpack = Join-Path $runtime "template-extract"
-    if (Test-Path $unpack) { Remove-Item $unpack -Recurse -Force }
-    Expand-Archive -Path $archive -DestinationPath $unpack -Force
-    $webRelease = Get-ChildItem $unpack -Filter "web_release.zip" -File -Recurse | Select-Object -First 1
-    if (-not $webRelease) { throw "Official template archive has no web_release.zip." }
-    $target = Split-Path $template -Parent
-    New-Item -ItemType Directory -Force -Path $target | Out-Null
-    Copy-Item -LiteralPath $webRelease.FullName -Destination $template
-    $webDebug = Get-ChildItem $unpack -Filter "web_debug.zip" -File -Recurse | Select-Object -First 1
-    if ($webDebug) { Copy-Item -LiteralPath $webDebug.FullName -Destination (Join-Path $target "web_debug.zip") }
-    $versionFile = Get-ChildItem $unpack -Filter "version.txt" -File -Recurse | Select-Object -First 1
-    if ($versionFile) { Copy-Item -LiteralPath $versionFile.FullName -Destination (Join-Path $target "version.txt") }
-    Remove-Item $archive -Force
-    Remove-Item $unpack -Force -Recurse
+    & (Join-Path $PSScriptRoot "Install-WebTemplates.ps1") -TemplateDir $target -ArchiveCache $archive
+    if ($LASTEXITCODE -ne 0 -and $null -ne $LASTEXITCODE) {
+        throw "Web export template installer exited with an error."
+    }
 }
 
 function Test-PortFree([int]$port) {

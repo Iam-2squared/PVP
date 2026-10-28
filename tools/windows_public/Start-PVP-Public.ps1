@@ -12,6 +12,7 @@ $script:children = @()
 $script:active = $false
 $script:activeTunnelLog = ""
 . (Join-Path $PSScriptRoot "Tunnel-Log.ps1")
+. (Join-Path $PSScriptRoot "Verify-PublicUrl.ps1")
 foreach ($dir in @($runtime, $bin, $logs)) {
     New-Item -ItemType Directory -Path $dir -Force | Out-Null
 }
@@ -339,6 +340,23 @@ try {
     if (-not $publicUrl -or $tunnel.HasExited) {
         Show-TunnelDiagnostics
         throw "Cloudflare Quick Tunnel did not provide a working session URL. Check cloudflared.err.log for connectivity or config errors."
+    }
+    Say "Verifying public DNS and HTTPS before announcing a live URL..."
+    $reachable = Wait-PvpPublicHttp -Url $publicUrl -Attempts 10 -PauseMilliseconds 2500
+    while (-not $reachable) {
+        Write-Host "[PVP] Cloudflare assigned a hostname, but the HTTPS game page is NOT reachable yet." -ForegroundColor Yellow
+        Write-Host "[PVP] Do not share this URL as a working game link." -ForegroundColor Yellow
+        Show-PvpPublicDnsStatus -Url $publicUrl
+        $choice = Read-Host "Press R to recheck this URL or Enter to STOP"
+        if ($choice -notmatch "^[Rr]$") { break }
+        if ($tunnel.HasExited) {
+            Write-Host "[PVP] Cloudflare Tunnel is no longer running." -ForegroundColor Red
+            break
+        }
+        $reachable = Wait-PvpPublicHttp -Url $publicUrl -Attempts 4 -PauseMilliseconds 2500
+    }
+    if (-not $reachable -or $tunnel.HasExited) {
+        throw "Public DNS/HTTPS verification did not succeed; Cloudflare URL was not shared as live."
     }
     $script:active = $true
     Write-Host ""

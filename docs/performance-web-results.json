@@ -1,0 +1,134 @@
+{
+  "url": "http://127.0.0.1:8081/",
+  "passed": true,
+  "renderer": "Chromium SwiftShader; functional native-input verification, not a smartphone FPS benchmark",
+  "scheduling": "Desktop browser closes before the mobile browser starts; no two software GPUs compete.",
+  "local_export": {
+    "directory": "captures/performance-public/fixed-web",
+    "pck_sha256": "f4fe5c91e88f5086b8e97e7dc8449f313c746ff959bb0e9b9cc700adde1e6990",
+    "look_source_sha256": "e08200f74bc82845040eaa99ba87f0e134b4ca17b78644734b1b61d27646a2ca",
+    "purpose": "Temporary local export including the final per-finger absolute-position look fix; keep these hashes separate from earlier transfer measurements and later public builds."
+  },
+  "http_transfer": {
+    "asset": "http://127.0.0.1:8081/index.js",
+    "passed": true,
+    "identity_bytes": 315759,
+    "gzip_bytes": 78637,
+    "content_encoding": "gzip",
+    "head_length_matches": true,
+    "decompressed_bytes_identical": true,
+    "sha256": "e3f56ee40e6f84371053db06692cfac15e2c8659547b11c6b2dfa1996dabd981",
+    "conditional_304": true
+  },
+  "desktop": {
+    "title_to_home": true,
+    "arena_rendered": true,
+    "movement": {
+      "authoritative_distance_m": 8.8,
+      "render_difference": {
+        "mean_rgb_difference": 69.436,
+        "changed_pixel_fraction": 0.719
+      }
+    },
+    "returned_home": {
+      "home_acknowledged": true,
+      "progression_preserved": true
+    },
+    "passed": true,
+    "console_errors": [],
+    "fatal_errors": [],
+    "websocket_join": true
+  },
+  "mobile": {
+    "title_to_home": true,
+    "arena_rendered": true,
+    "native_multitouch": {
+      "left_half_start_cannot_claim_look": {
+        "left_drag": {
+          "passed": true,
+          "max_input_yaw_delta_rad": 0.0,
+          "authoritative_yaw_unchanged": true
+        },
+        "cross_right_without_fresh_press": {
+          "passed": true,
+          "max_input_yaw_delta_rad": 0.0,
+          "authoritative_yaw_unchanged": true
+        }
+      },
+      "stick_first_look_second": {
+        "passed": true,
+        "movement_m": 28.488,
+        "yaw_delta_rad": -0.252121,
+        "touch_order": [
+          1,
+          2
+        ]
+      },
+      "release_look_keeps_stick": {
+        "passed": true,
+        "movement_m": 5.6,
+        "yaw_unchanged": true
+      },
+      "look_first_stick_second": {
+        "passed": true,
+        "movement_m": 8.793,
+        "yaw_delta_rad": -0.08404,
+        "touch_order": [
+          2,
+          1
+        ],
+        "roles_reversed": true
+      },
+      "release_stick_keeps_look": {
+        "passed": true,
+        "yaw_delta_rad": -0.168081,
+        "input_move_zero": true
+      },
+      "look_cross_left_pauses": {
+        "passed": true,
+        "max_input_yaw_delta_rad": 0.0,
+        "authoritative_yaw_unchanged": true
+      },
+      "look_stays_left_pauses": {
+        "passed": true,
+        "max_input_yaw_delta_rad": 0.0,
+        "authoritative_yaw_unchanged": true
+      },
+      "first_right_return_has_no_jump": {
+        "passed": true,
+        "max_input_yaw_delta_rad": 0.0,
+        "authoritative_yaw_unchanged": true
+      },
+      "right_look_resumes_normally": {
+        "passed": true,
+        "yaw_delta_rad": -0.168081,
+        "expected_native_delta_rad": -0.16799999999999998
+      }
+    },
+    "returned_home": {
+      "home_acknowledged": true,
+      "progression_preserved": true
+    },
+    "native_home_reentry": true,
+    "passed": true,
+    "console_errors": [],
+    "fatal_errors": [],
+    "websocket_join": true,
+    "horizontal_gesture_pitch_verification": {
+      "input_packets": 118,
+      "minimum_pitch_rad": 0.0,
+      "maximum_pitch_rad": 0.0,
+      "all_zero": true,
+      "method": "Inspect every recorded mobile input packet while horizontal look gestures and separate left-stick gestures execute.",
+      "scope": "Shows no unintended pitch in these horizontal Web gestures; vertical look deltas are additionally covered by the native regression."
+    }
+  },
+  "websocket_url": "ws://127.0.0.1:8910",
+  "schema_version": 1,
+  "scope": "Functional verification of a temporary local Web export at loopback HTTP/WS. Desktop and mobile browsers run sequentially. This does not verify a public deployment or smartphone hardware performance.",
+  "source_paths": {
+    "look": "scripts/battle/arena_local_player.gd"
+  },
+  "public_deployment_verified": false,
+  "smartphone_fps_or_memory_benchmark": false
+}

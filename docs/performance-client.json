@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "scope": "Client presentation CPU work only. Geometry, material, display resolution and authoritative gameplay rules are preserved.",
+  "scope": "Client presentation CPU optimizations and per-finger touch input correction. Geometry, materials, display resolution and authoritative gameplay rules are preserved.",
   "measurement": {
     "engine": "Godot 4.6.3 stable official",
     "platform": "Linux x86_64",
@@ -73,7 +73,8 @@
       "layout_us": 12113,
       "player_idle_process_us": 10738
     },
-    "limitations": "Measurements ran in a shared development environment. Some isolated paths are unchanged or slower; these totals do not establish a whole-game speedup or a smartphone frame rate."
+    "limitations": "Measurements ran in a shared development environment. Some isolated paths are unchanged or slower; these totals do not establish a whole-game speedup or a smartphone frame rate.",
+    "stage": "CPU optimization stage, before the final per-finger touch correction; the measured layout/presentation processing functions were unchanged by that input-only correction."
   },
   "changes": [
     "Redraw the battle HUD only when its displayed state, input feedback or layout changes.",
@@ -110,14 +111,14 @@
     "right_half_touch": {
       "method": "Actual viewport.push_input ScreenTouch and ScreenDrag events, with fixed finger ownership and simultaneous movement/look input.",
       "window": {
-        "checks": 64,
+        "checks": 68,
         "failures": [],
         "skipped": [],
         "native_input_events": true,
         "renderer": "Mesa llvmpipe, Godot Compatibility, X11"
       },
       "headless": {
-        "checks": 61,
+        "checks": 65,
         "failures": [],
         "native_input_events": true,
         "skipped": [
@@ -132,13 +133,22 @@
         "Suppress crossing-center and re-entry deltas",
         "Reset on resize, portrait, cancellation, focus, Home, death and spawn",
         "Ignore emulated mouse events with device -1",
-        "Window mouse capture, mouse camera and mouse attack"
+        "Window mouse capture, mouse camera and mouse attack",
+        "Both finger-ID orders with corrupted event.relative: yaw and pitch follow only the owned finger absolute-position delta"
       ],
       "commands": {
         "window": "godot --display-driver x11 --rendering-method gl_compatibility --path . --script res://tools/test_arena_touch.gd --audio-driver Dummy",
         "headless": "godot --headless --path . --script res://tools/test_arena_touch.gd"
       },
-      "smartphone_hardware_test": false
+      "smartphone_hardware_test": false,
+      "earlier_optimization_stage": {
+        "window_checks": 64,
+        "headless_checks": 61,
+        "headless_skipped": 3,
+        "failures": []
+      },
+      "position_delta_source": "Current event position minus the previous position of the same owned finger; event.relative is not used for touch look.",
+      "local_web_results": "performance-web-results.json"
     }
   },
   "smartphone_rendering_benchmark": false

@@ -1,0 +1,47 @@
+{
+  "url": "https://sb-2s98i2uhqh08.vercel.run/",
+  "scope": "Public HTTP/gzip, actual browser WSS entry, rendered city and short native movement; detailed mobile multitouch was checked locally on the optimized game source.",
+  "passed": true,
+  "renderer": "Chromium SwiftShader; functional check, not a smartphone FPS benchmark",
+  "http_transfer": {
+    "asset": "https://sb-2s98i2uhqh08.vercel.run/index.js",
+    "passed": true,
+    "identity_bytes": 315759,
+    "gzip_bytes": 78637,
+    "content_encoding": "gzip",
+    "head_length_matches": true,
+    "decompressed_bytes_identical": true,
+    "sha256": "e3f56ee40e6f84371053db06692cfac15e2c8659547b11c6b2dfa1996dabd981",
+    "conditional_304": true
+  },
+  "native_movement": {
+    "authoritative_distance_m": 5.92,
+    "nonzero_input_observed": true
+  },
+  "returned_home": {
+    "home_acknowledged": true,
+    "progression_preserved": true
+  },
+  "title_to_home": true,
+  "authentication_required": false,
+  "public_wss_welcome": true,
+  "native_battle_button_server_entry": true,
+  "rendered_city": true,
+  "spawn_inside_city": true,
+  "websocket_urls": [
+    "wss://sb-38sok9flobda.vercel.run/"
+  ],
+  "console_errors": [],
+  "fatal_errors": [],
+  "schema_version": 1,
+  "deployment_source": {
+    "commit": "0635f4d6f3b00fc1b09ee0bc0d4065455c2d2444",
+    "look_source_sha256": "e08200f74bc82845040eaa99ba87f0e134b4ca17b78644734b1b61d27646a2ca",
+    "verification": "Sandbox bootstrap asserted this commit and look-source hash before starting the public preview.",
+    "bundle_scope": "The public preview is a separate export. Local distribution and detailed local input-QA PCK hashes are recorded in their own reports."
+  },
+  "detailed_multitouch_scope": "The detailed two-finger test was performed on the same optimized look source in the temporary local export, not repeated as a full mobile test at the public URL.",
+  "local_multitouch_report": "performance-web-results.json",
+  "public_deployment_verified": true,
+  "smartphone_fps_or_memory_benchmark": false
+}

@@ -1,4 +1,5 @@
 {
+  "phase": "final_local_release_after_per_finger_position_fix",
   "assets": [
     {
       "file": "index.audio.position.worklet.js",
@@ -23,9 +24,9 @@
     },
     {
       "file": "index.pck",
-      "raw_bytes": 20911496,
-      "gzip_bytes": 20346080,
-      "sha256": "a74b3f0eef24a63cc9089d82d9ecb1531cc2f410b43157bd7a2694b0db2e7c68",
+      "raw_bytes": 20913560,
+      "gzip_bytes": 20346559,
+      "sha256": "e29f2726f56186e33ce83d60e706292e7c25ab79e2b6b282f02edbef3c4902ec",
       "decoded_bytes_exact": true
     },
     {
@@ -36,12 +37,12 @@
       "decoded_bytes_exact": true
     }
   ],
-  "raw_total_bytes": 58938192,
-  "gzip_total_bytes": 29864717,
+  "raw_total_bytes": 58940256,
+  "gzip_total_bytes": 29865196,
+  "look_source_sha256": "e08200f74bc82845040eaa99ba87f0e134b4ca17b78644734b1b61d27646a2ca",
   "method": "Python standard gzip level6; original files unchanged; HTTP Content-Encoding negotiation",
   "schema_version": 1,
   "scope": "HTTP response-body bytes of five final WASM/PCK/JavaScript assets only. Excludes HTML, headers and other page requests. Original assets are unchanged by gzip preparation.",
-  "compression_reduction_percent": 49.33,
   "fixture_tests": {
     "command": "PYTHONDONTWRITEBYTECODE=1 python3 tools/test_serve_preview.py",
     "test_groups": 7,
@@ -57,5 +58,21 @@
     ],
     "scope": "Small temporary fixtures, separate from the actual final-export byte comparison above."
   },
-  "smartphone_fps_or_load_time_benchmark": false
+  "smartphone_fps_or_load_time_benchmark": false,
+  "compression_reduction_percent": 49.33,
+  "measurement_stage": "Final local distribution export after the per-finger absolute-position correction. Temporary local QA and the public Sandbox are separate exports of the same look source; do not attribute this PCK hash to those bundles.",
+  "historical_exports": [
+    {
+      "phase": "initial_optimized_export_before_final_per_finger_correction",
+      "raw_total_bytes": 58938192,
+      "gzip_total_bytes": 29864717,
+      "pck": {
+        "file": "index.pck",
+        "raw_bytes": 20911496,
+        "gzip_bytes": 20346080,
+        "sha256": "a74b3f0eef24a63cc9089d82d9ecb1531cc2f410b43157bd7a2694b0db2e7c68",
+        "decoded_bytes_exact": true
+      }
+    }
+  ]
 }

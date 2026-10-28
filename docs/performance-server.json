@@ -96,7 +96,7 @@
     "smartphone_rendering_benchmark": false
   },
   "native_regression_results": {
-    "total_checks": 590,
+    "total_checks": 594,
     "failed_checks": 0,
     "skipped_checks": 0,
     "suites": {
@@ -192,17 +192,17 @@
         "user_data_directory": "/tmp/pvp-final-arena_input"
       },
       "touch": {
-        "checks": 64,
+        "checks": 68,
         "result": {
-          "checks": 64,
+          "checks": 68,
           "failures": [],
           "native_input_events": true,
           "skipped": []
         },
-        "log": "/tmp/pvp-final-touch.log",
+        "log": "/tmp/pvp-arena-touch-final-window.log",
         "exit_code": 0,
         "display": "X11 :105, llvmpipe",
-        "user_data_directory": "/tmp/pvp-final-touch"
+        "user_data_directory": "/tmp/pvp-arena-touch-window"
       }
     },
     "exact_saved_scene_and_runtime_gates": {
@@ -216,6 +216,12 @@
     },
     "collision_verification_log": "/tmp/pvp-final-server-world-verify.log",
     "clock": "Real wall clock; --fixed-fps was not used.",
-    "touch_scope": "The touch suite used the native X11 window so the last three mouse-capture checks were executed, with no skipped checks."
+    "touch_scope": "Native X11 window executed all 68 touch/mouse checks, including four added assertions for corrupted relative values and both finger-ID orders; no skips.",
+    "earlier_optimization_stage": {
+      "total_checks": 590,
+      "touch_checks": 64,
+      "failed_checks": 0,
+      "skipped_checks": 0
+    }
   }
 }

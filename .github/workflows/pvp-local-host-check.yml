@@ -2,7 +2,7 @@ name: Windows on-demand host checks
 
 on:
   push:
-    branches: [feature/windows-on-demand-public-host]
+    branches: [feature/windows-on-demand-public-host, fix/windows-godot-console-import]
   pull_request:
     paths:
       - "Start-PVP-Public.bat"
@@ -39,6 +39,38 @@ jobs:
               throw "PowerShell parse errors in $file"
             }
           }
+
+  windows-godot-import:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Download official Godot Windows editor
+        shell: powershell
+        run: |
+          $ErrorActionPreference = "Stop"
+          $url = "https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_win64.exe.zip"
+          Invoke-WebRequest -Uri $url -OutFile godot.zip -UseBasicParsing
+          Expand-Archive godot.zip -DestinationPath godot-bin -Force
+          $console = "godot-bin/Godot_v4.6.3-stable_win64_console.exe"
+          if (-not (Test-Path $console)) { throw "Official release did not include console Godot" }
+          & $console --version
+          if ($LASTEXITCODE -ne 0) { throw "Console Godot --version failed" }
+      - name: Import PVP resources on Windows via console executable
+        shell: powershell
+        run: |
+          $ErrorActionPreference = "Stop"
+          $console = (Resolve-Path "godot-bin/Godot_v4.6.3-stable_win64_console.exe").Path
+          & $console --headless --path . --import --log-file "windows-godot-import.log"
+          $exitCode = $LASTEXITCODE
+          if ($exitCode -ne 0) {
+            if (Test-Path "windows-godot-import.log") { Get-Content "windows-godot-import.log" -Tail 70 }
+            throw "Windows Godot import failed: $exitCode"
+          }
+          & $console --headless --path . --script res://tools/test_frontend_battle.gd
+          if ($LASTEXITCODE -ne 0) { throw "Windows GDScript regression test failed" }
 
   godot-regression:
     runs-on: ubuntu-latest

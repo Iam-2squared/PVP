@@ -2,7 +2,7 @@ name: Windows on-demand host checks
 
 on:
   push:
-    branches: [feature/windows-on-demand-public-host, fix/windows-godot-console-import]
+    branches: [feature/windows-on-demand-public-host, fix/windows-godot-console-import, fix/godot-web-nothreads-templates]
   pull_request:
     paths:
       - "Start-PVP-Public.bat"
@@ -30,7 +30,7 @@ jobs:
         shell: powershell
         run: |
           $ErrorActionPreference = "Stop"
-          foreach ($file in @("tools/windows_public/Start-PVP-Public.ps1", "tools/windows_public/Stop-PVP-Public.ps1")) {
+          foreach ($file in @("tools/windows_public/Start-PVP-Public.ps1", "tools/windows_public/Stop-PVP-Public.ps1", "tools/windows_public/Install-WebTemplates.ps1")) {
             $tokens = $null
             $errors = $null
             [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $file).Path, [ref]$tokens, [ref]$errors) | Out-Null
@@ -42,7 +42,7 @@ jobs:
 
   windows-godot-import:
     runs-on: windows-latest
-    timeout-minutes: 25
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
@@ -71,6 +71,26 @@ jobs:
           }
           & $console --headless --path . --script res://tools/test_frontend_battle.gd
           if ($LASTEXITCODE -ne 0) { throw "Windows GDScript regression test failed" }
+
+      - name: Install real no-thread Web templates and export with Godot 4.6.3
+        shell: powershell
+        run: |
+          $ErrorActionPreference = "Stop"
+          $templateDir = Join-Path $env:APPDATA "Godot/export_templates/4.6.3.stable"
+          $archive = Join-Path $env:RUNNER_TEMP "Godot_v4.6.3-stable_export_templates.zip"
+          & ./tools/windows_public/Install-WebTemplates.ps1 -TemplateDir $templateDir -ArchiveCache $archive -NonInteractive
+          $release = Join-Path $templateDir "web_nothreads_release.zip"
+          $debug = Join-Path $templateDir "web_nothreads_debug.zip"
+          if (-not (Test-Path $release) -or -not (Test-Path $debug)) { throw "Correct no-thread export templates are missing" }
+          $console = (Resolve-Path "godot-bin/Godot_v4.6.3-stable_win64_console.exe").Path
+          $out = Join-Path $env:RUNNER_TEMP "pvp-web-export"
+          New-Item -ItemType Directory -Path $out -Force | Out-Null
+          & $console --headless --path . --export-release Web (Join-Path $out "index.html")
+          if ($LASTEXITCODE -ne 0) { throw "Web export failed after template installation" }
+          foreach ($asset in @("index.html","index.js","index.pck","index.wasm")) {
+            if (-not (Test-Path (Join-Path $out $asset))) { throw "Missing expected Web asset $asset" }
+          }
+          Write-Host "Godot no-thread Web export succeeded."
 
   godot-regression:
     runs-on: ubuntu-latest
